@@ -1,0 +1,91 @@
+<?xml version="1.0" encoding="utf-8"?>
+<RelativeLayout
+    xmlns:android="http://schemas.android.com/apk/res/android"
+    android:layout_width="match_parent"
+    android:layout_height="wrap_content"
+    android:id="@+id/graphselector"
+    android:background="@drawable/flashbar"
+    >
+
+    <Spinner
+        android:id="@+id/showGraphOptions"
+        android:layout_margin="5dp"
+        android:layout_width="match_parent"
+        android:layout_height="50dp">
+        <requestFocus/>
+    </Spinner>
+
+    <TextView
+        android:id="@+id/LabelText"
+        android:layout_width="wrap_content"
+        android:layout_height="39dp"
+        android:layout_below="@id/showGraphOptions"
+        android:layout_alignParentStart="true"
+        android:layout_marginStart="12dp"
+        android:layout_marginTop="20dp"
+        android:text="Label Column"
+        android:textColor="#FFFFFF"
+        android:textSize="20sp"
+        android:textStyle="bold" />
+
+    <EditText
+        android:id="@+id/LabelInput"
+
+        android:layout_width="wrap_content"
+        android:layout_height="wrap_content"
+        android:layout_below="@+id/showGraphOptions"
+        android:layout_alignParentEnd="true"
+        android:layout_marginStart="15dp"
+        android:layout_marginTop="15dp"
+        android:layout_marginEnd="20dp"
+        android:layout_toEndOf="@+id/LabelText"
+        android:hint="1 or 2 or 3.."
+        android:textColor="#FFFFFF">
+
+    </EditText>
+
+    <TextView
+        android:id="@+id/ValueText"
+        android:layout_width="wrap_content"
+        android:layout_height="40dp"
+        android:layout_below="@id/LabelText"
+        android:layout_alignParentStart="true"
+        android:layout_marginStart="12dp"
+        android:layout_marginTop="20dp"
+        android:text="Value Column"
+        android:textColor="#FFFFFF"
+        android:textSize="20sp"
+        android:textStyle="bold" />
+
+
+    <EditText
+        android:id="@+id/ValueInput"
+        android:layout_width="250dp"
+        android:layout_height="wrap_content"
+        android:layout_below="@+id/LabelInput"
+        android:layout_alignParentEnd="true"
+        android:layout_marginStart="15dp"
+        android:layout_marginTop="15dp"
+        android:layout_marginEnd="20dp"
+        android:layout_toEndOf="@+id/ValueText"
+        android:hint="Multiple: 1,2,3 | Single: 1 or 2.."
+        android:textColor="#FFFFFF">
+
+    </EditText>
+
+    <CheckBox
+        android:id="@+id/HeadersCheckBox"
+        android:layout_width="wrap_content"
+        android:layout_height="wrap_content"
+        android:layout_alignParentStart="true"
+        android:layout_marginStart="12dp"
+        android:layout_marginTop="15dp"
+        android:layout_below="@+id/ValueInput"
+        android:buttonTint="#FFFFFF"
+        android:text="This File Includes Column Headers"
+        android:textColor="#ffffff"
+        android:textSize="20sp" />
+
+
+
+</RelativeLayout>

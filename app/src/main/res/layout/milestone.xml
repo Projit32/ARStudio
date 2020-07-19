@@ -1,0 +1,19 @@
+<?xml version="1.0" encoding="utf-8"?>
+<RelativeLayout
+    xmlns:android="http://schemas.android.com/apk/res/android" android:layout_width="250dp"
+    android:layout_height="wrap_content"
+    android:background="@drawable/milestonebackground">
+    <TextView
+        android:layout_width="match_parent"
+        android:layout_height="wrap_content"
+        android:text="Hello World"
+        android:textStyle="bold"
+        android:fontFamily="cursive"
+        android:textColor="#FFFFFF"
+        android:textSize="30sp"
+        android:layout_margin="5dp"
+        android:textAlignment="center"
+        android:id="@+id/FloatingInnerText"
+        />
+
+</RelativeLayout>

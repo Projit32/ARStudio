@@ -1,0 +1,263 @@
+<?xml version="1.0" encoding="utf-8"?>
+<RelativeLayout xmlns:android="http://schemas.android.com/apk/res/android"
+    xmlns:app="http://schemas.android.com/apk/res-auto"
+    xmlns:tools="http://schemas.android.com/tools"
+    android:layout_width="match_parent"
+    android:layout_height="match_parent"
+    android:id="@+id/mainLayout"
+    tools:context=".MainActivity">
+
+
+    <fragment
+        android:id="@+id/arFragment"
+        class="com.ProLabs.arstudyboard.CloudARFragment"
+        android:layout_width="match_parent"
+        android:layout_height="match_parent" />
+
+    <com.google.android.material.floatingactionbutton.FloatingActionButton
+        android:id="@+id/addbtn"
+        android:layout_width="wrap_content"
+        android:layout_height="wrap_content"
+        android:layout_alignStart="@+id/arFragment"
+        android:layout_alignParentTop="true"
+        android:layout_marginStart="15dp"
+        android:layout_marginTop="25pt"
+        android:backgroundTint="#B2F5C000"
+        android:clickable="true"
+        android:focusable="true"
+        app:maxImageSize="46dp"
+        app:srcCompat="@android:drawable/ic_menu_add" />
+
+    <androidx.recyclerview.widget.RecyclerView
+        android:layout_width="match_parent"
+        android:layout_height="match_parent"
+        android:id="@+id/itemRecyclerView"
+        android:visibility="gone"
+        android:background="#E2000000"
+        android:layout_marginEnd="0dp" />
+
+    <ProgressBar
+        android:id="@+id/progressBar"
+        android:visibility="gone"
+        android:layout_width="wrap_content"
+        android:layout_height="wrap_content"
+        android:layout_centerInParent="true"/>
+
+    <com.google.android.material.floatingactionbutton.FloatingActionButton xmlns:app="http://schemas.android.com/apk/res-auto"
+        android:id="@+id/refreshBtn"
+        android:layout_width="wrap_content"
+        android:layout_height="wrap_content"
+        android:layout_below="@+id/deleteBtn"
+        android:layout_alignParentStart="true"
+        android:layout_marginStart="15dp"
+        android:layout_marginTop="10dp"
+        android:backgroundTint="#B225D366"
+        android:clickable="true"
+        android:focusable="true"
+        app:maxImageSize="32dp"
+        app:srcCompat="@android:drawable/ic_popup_sync" />
+
+    <com.google.android.material.floatingactionbutton.FloatingActionButton
+        android:id="@+id/helpBtn"
+        android:layout_width="wrap_content"
+        android:layout_height="wrap_content"
+        android:layout_below="@+id/refreshBtn"
+        android:layout_alignParentStart="true"
+        android:layout_marginStart="15dp"
+        android:layout_marginTop="10dp"
+        android:backgroundTint="#673AB7"
+        android:clickable="true"
+        android:focusable="true"
+        app:maxImageSize="32dp"
+        app:srcCompat="@drawable/ic_baseline_help_outline_24" />
+
+    <LinearLayout
+        android:id="@+id/controlsPanel"
+        android:layout_width="wrap_content"
+        android:layout_height="wrap_content"
+        android:layout_alignTop="@+id/arFragment"
+        android:layout_centerHorizontal="true"
+        android:layout_marginTop="20dp"
+        android:background="@drawable/panel"
+        android:orientation="horizontal"
+        android:padding="10dp">
+
+        <ImageView
+            android:id="@+id/clearButton"
+            android:layout_width="48dp"
+            android:layout_height="48dp"
+            android:layout_gravity="center"
+            android:contentDescription="@string/clear_drawing"
+            android:src="@drawable/ic_delete" />
+
+        <ImageView
+            android:id="@+id/colorPickerIcon"
+            android:layout_width="48dp"
+            android:layout_height="48dp"
+            android:layout_gravity="center"
+            android:layout_marginStart="14dp"
+            android:contentDescription="@string/select_color"
+            android:src="@drawable/ic_selected_white" />
+
+        <ImageView
+            android:id="@+id/undoButton"
+            android:layout_width="48dp"
+            android:layout_height="48dp"
+            android:layout_gravity="center"
+            android:layout_marginStart="14dp"
+            android:contentDescription="@string/undo_last_drawing_element"
+            android:src="@drawable/ic_undo" />
+    </LinearLayout>
+
+    <LinearLayout
+        android:id="@+id/colorPanel"
+        android:layout_width="wrap_content"
+        android:layout_height="wrap_content"
+        android:layout_alignTop="@+id/arFragment"
+        android:layout_centerHorizontal="true"
+        android:layout_marginTop="20dp"
+        android:background="@drawable/panel"
+        android:orientation="horizontal"
+        android:padding="10dp">
+
+        <ImageView
+            android:id="@+id/whiteCircle"
+            android:layout_width="15pt"
+            android:layout_height="15pt"
+            android:layout_marginEnd="3pt"
+            android:contentDescription="@string/white_color"
+            android:src="@drawable/ic_white_circle" />
+
+        <ImageView
+            android:id="@+id/redCircle"
+            android:layout_width="15pt"
+            android:layout_height="15pt"
+            android:layout_marginEnd="3pt"
+            android:contentDescription="@string/red_color"
+            android:src="@drawable/ic_red_circle" />
+
+        <ImageView
+            android:id="@+id/greenCircle"
+            android:layout_width="15pt"
+            android:layout_height="15pt"
+            android:layout_marginEnd="3pt"
+            android:contentDescription="@string/green_color"
+            android:src="@drawable/ic_green_circle" />
+
+        <ImageView
+            android:id="@+id/blueCircle"
+            android:layout_width="15pt"
+            android:layout_height="15pt"
+            android:layout_marginEnd="3pt"
+            android:contentDescription="@string/blue_color"
+            android:src="@drawable/ic_blue_circle" />
+
+        <ImageView
+            android:id="@+id/blackCircle"
+            android:layout_width="15pt"
+            android:layout_height="15pt"
+            android:layout_marginEnd="3pt"
+            android:contentDescription="@string/black_color"
+            android:src="@drawable/ic_black_circle" />
+
+        <ImageView
+            android:id="@+id/rainbowCircle"
+            android:layout_width="15pt"
+            android:layout_height="15pt"
+            android:layout_marginEnd="3dp"
+            android:contentDescription="@string/rainbow_color"
+            android:src="@drawable/ic_rainbow_circle" />
+    </LinearLayout>
+
+    <com.google.android.material.floatingactionbutton.FloatingActionButton
+        android:id="@+id/deleteBtn"
+        android:layout_width="89dp"
+        android:layout_height="wrap_content"
+        android:layout_below="@+id/drawBtn"
+        android:layout_alignStart="@+id/arFragment"
+        android:layout_marginStart="15dp"
+        android:layout_marginTop="10dp"
+        android:backgroundTint="#DCFF0101"
+        android:src="@android:drawable/ic_input_delete"
+        app:maxImageSize="32dp" />
+
+    <com.google.android.material.floatingactionbutton.FloatingActionButton
+        android:id="@+id/drawBtn"
+        android:layout_width="wrap_content"
+        android:layout_height="wrap_content"
+        android:layout_below="@+id/addbtn"
+        android:layout_alignStart="@+id/arFragment"
+        android:layout_marginStart="15dp"
+        android:layout_marginTop="10dp"
+        android:backgroundTint="#D00173FF"
+        android:clickable="true"
+        app:maxImageSize="32dp"
+        app:srcCompat="@android:drawable/ic_menu_edit" />
+
+    <ImageButton
+        android:id="@+id/record"
+        android:layout_width="65dp"
+        android:layout_height="65dp"
+        android:layout_alignBottom="@+id/arFragment"
+        android:layout_centerHorizontal="true"
+        android:layout_marginBottom="50dp"
+        android:background="@drawable/recorderstop"
+        android:scaleType="centerInside"
+        android:src="@android:drawable/ic_menu_camera"
+        android:textColor="#ffff" />
+
+    <ImageButton
+        android:id="@+id/FloatingText"
+        android:layout_width="60dp"
+        android:layout_height="60dp"
+        android:layout_alignEnd="@+id/arFragment"
+        android:layout_alignBottom="@+id/arFragment"
+        android:layout_marginEnd="40pt"
+        android:layout_marginBottom="50dp"
+        android:background="#00FFFFFF"
+        android:scaleType="fitCenter"
+        app:srcCompat="@drawable/floatingtextbtn" />
+
+    <ImageButton
+        android:id="@+id/FloatingImage"
+        android:layout_width="60dp"
+        android:layout_height="60dp"
+        android:layout_alignStart="@+id/arFragment"
+        android:layout_alignBottom="@+id/arFragment"
+        android:layout_marginStart="40pt"
+        android:layout_marginBottom="52dp"
+        android:background="#00FFFFFF"
+        android:scaleType="fitCenter"
+        app:srcCompat="@drawable/floatingimageicon" />
+
+    <ImageButton
+        android:id="@+id/statBtn"
+        android:src="@drawable/charticon"
+        android:layout_width="50dp"
+        android:layout_height="50dp"
+        android:scaleType="fitCenter"
+        android:background="#00ffffff"
+        android:layout_above="@+id/FloatingImage"
+        android:layout_alignStart="@+id/arFragment"
+        android:layout_marginStart="40pt"
+        android:layout_marginBottom="10dp"
+        android:text="Button" />
+
+    <Button
+        android:id="@+id/test"
+        android:textColor="#ffffff"
+        android:textSize="24sp"
+        android:textStyle="bold"
+        android:fontFamily="cursive"
+        android:background="@drawable/live"
+        android:layout_width="60dp"
+        android:layout_height="60dp"
+        android:layout_above="@+id/FloatingText"
+        android:layout_alignParentEnd="true"
+        android:layout_marginEnd="40pt"
+        android:layout_marginBottom="10dp"
+        android:textAllCaps="false"
+        android:text="Live" />
+
+
+</RelativeLayout>

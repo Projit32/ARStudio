@@ -1,0 +1,102 @@
+<?xml version="1.0" encoding="utf-8"?>
+<RelativeLayout
+    xmlns:android="http://schemas.android.com/apk/res/android"
+    xmlns:app="http://schemas.android.com/apk/res-auto"
+    android:layout_width="wrap_content"
+    android:background="@drawable/liveflash"
+    android:layout_height="wrap_content">
+
+    <LinearLayout
+        android:id="@+id/uhd_profile"
+        android:layout_width="120pt"
+        android:layout_height="wrap_content"
+        android:layout_alignParentStart="true"
+        android:layout_alignParentTop="true"
+        android:layout_margin="10dp">
+
+        <ImageButton
+            android:layout_width="wrap_content"
+            android:layout_height="wrap_content"
+            android:background="#00000000"
+
+            app:srcCompat="@drawable/uhd" />
+
+        <TextView
+            android:layout_width="wrap_content"
+            android:layout_height="wrap_content"
+            android:layout_gravity="center"
+            android:text="4K Profile"
+            android:textColor="#ffffff"
+            android:textSize="30sp"
+            android:textStyle="bold|italic"
+
+            />
+    </LinearLayout>
+
+    <LinearLayout
+        android:id="@+id/hd_profile"
+        android:layout_width="120pt"
+        android:layout_height="wrap_content"
+        android:layout_below="@+id/uhd_profile"
+        android:layout_alignParentStart="true"
+        android:layout_margin="10dp">
+
+        <ImageButton
+            android:layout_width="wrap_content"
+            android:layout_height="wrap_content"
+            android:background="#00000000"
+
+            app:srcCompat="@drawable/hd" />
+
+        <TextView
+            android:layout_width="wrap_content"
+            android:layout_height="wrap_content"
+            android:layout_gravity="center"
+            android:text="1080P Profile"
+            android:textColor="#ffffff"
+            android:textSize="30sp"
+            android:textStyle="bold|italic"
+
+            />
+    </LinearLayout>
+
+    <LinearLayout
+        android:id="@+id/hq_profile"
+        android:layout_width="120pt"
+        android:layout_height="wrap_content"
+        android:layout_below="@+id/hd_profile"
+        android:layout_alignParentStart="true"
+        android:layout_margin="10dp">
+
+        <ImageButton
+            android:layout_width="wrap_content"
+            android:layout_height="wrap_content"
+            android:background="#00000000"
+
+            app:srcCompat="@drawable/hq" />
+
+        <TextView
+            android:layout_width="wrap_content"
+            android:layout_height="wrap_content"
+            android:layout_gravity="center"
+            android:text="720P Profile"
+            android:textColor="#ffffff"
+            android:textSize="30sp"
+            android:textStyle="bold|italic"
+
+            />
+    </LinearLayout>
+
+    <TextView
+        android:layout_width="120pt"
+        android:layout_height="wrap_content"
+        android:text="** If any of the selected profile is not supported, \nthen it will set whichever resolution available. **"
+        android:textColor="#ffffff"
+        android:textSize="12sp"
+        android:textStyle="italic"
+        android:layout_below="@id/hq_profile"
+        android:layout_margin="10dp"
+        />
+
+
+</RelativeLayout>

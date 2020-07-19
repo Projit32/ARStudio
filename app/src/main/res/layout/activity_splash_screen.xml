@@ -1,0 +1,37 @@
+<?xml version="1.0" encoding="utf-8"?>
+<RelativeLayout xmlns:android="http://schemas.android.com/apk/res/android"
+    xmlns:app="http://schemas.android.com/apk/res-auto"
+    xmlns:tools="http://schemas.android.com/tools"
+    android:layout_width="match_parent"
+    android:layout_height="match_parent"
+    android:background="#000000"
+    tools:context=".SplashScreen">
+
+    <ImageView
+        android:id="@+id/MainLogo"
+        android:layout_width="100pt"
+        android:layout_height="110pt"
+        android:layout_marginTop="75pt"
+        android:layout_centerHorizontal="true"
+        android:src="@drawable/logo_show"
+         />
+
+    <ImageView
+        android:layout_width="50pt"
+        android:layout_height="50pt"
+        android:layout_below="@+id/MainLogo"
+        android:layout_alignParentStart="true"
+        android:layout_marginStart="25pt"
+        android:layout_marginTop="50dp"
+        android:src="@drawable/arcore_logo"/>
+
+    <ImageView
+        android:layout_width="100pt"
+        android:layout_height="50pt"
+        android:layout_below="@+id/MainLogo"
+        android:layout_alignParentEnd="true"
+        android:layout_marginTop="50dp"
+        android:layout_marginEnd="15pt"
+        android:src="@drawable/firebase_logo" />
+
+</RelativeLayout>

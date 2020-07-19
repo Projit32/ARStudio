@@ -1,0 +1,29 @@
+<?xml version="1.0" encoding="utf-8"?>
+<RelativeLayout
+    xmlns:android="http://schemas.android.com/apk/res/android"
+    xmlns:app="http://schemas.android.com/apk/res-auto"
+    android:layout_width="250dp"
+    android:layout_height="wrap_content"
+    android:background="@drawable/pinkribbonlayout"
+    android:minHeight="250dp">
+
+
+    <ImageView
+        android:id="@+id/pinkribbonimage"
+        android:layout_width="match_parent"
+        android:layout_height="114dp"
+        app:srcCompat="@drawable/pinkribbon" />
+
+    <TextView
+        android:layout_width="match_parent"
+        android:layout_height="wrap_content"
+        android:textSize="20sp"
+        android:textColor="#FFFFFF"
+        android:layout_margin="5dp"
+        android:text="Hello world"
+        android:textStyle="bold"
+        android:textAlignment="center"
+        android:fontFamily="cursive"
+        android:id="@+id/FloatingInnerText"
+        android:layout_below="@id/pinkribbonimage"/>
+</RelativeLayout>
