@@ -36,7 +36,7 @@ Initial Setup:
 ```
 <meta-data
        android:name="com.google.android.ar.API_KEY"
-       android:value= "YOUR_CLOUD_ANCHOR_API_KEY" />
+       android:value= "YOUR_API_KEY" />
 ```       
 
 * Replace `YOUR_DOMAIN_NAME` & to wherever you're hosting the `ARSR` folder in the following folders. 
