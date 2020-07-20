@@ -9,13 +9,13 @@
 An implementation of ARCore [Sceneform](https://developers.google.com/sceneform/develop) for **supported** Android Phones. Sceneform has been officially open sourced by Google and this app has been built upon the latest Sceneform SDK `v1.16.0`, which was mofified to work on the latest **AndroidX** libraries and **Gradel 4.0.0**. You can find the forked repository [Here](https://github.com/Projit32/sceneform-android-sdk). 
 
 <p align="center">
-  <img  src="GIFs/feature.gif">
+  <img  src="GIFs/features.gif" height=450>
 </p>
 
 AR Studio: Make your world your playground, draw in the air, create live photo galleries, Place notes anywhere, visualise 2D, 3D and animated models in real-time, forget projectors and theoretical explanations, analyse trends, bars and chart data, and get immersed into the world of Augmented Reality with the all-purpose Augmented Reality app with live cloud synchronisation support! This was made with simplicity in mind and has the simplest and intuitive interface to use, along with so many cool features to play with.
 
 <p align="center">
-  <img  src="GIFs/interface.gif">
+  <img  src="GIFs/interface.gif" height=450>
 </p>
 
 See the full demo of the app and the tutorial in this [link](https://youtu.be/TLXhzyL4WCE).
@@ -51,8 +51,8 @@ Primary Features (All in realtime):
 1. Load static and animated 3D Models anywhere and anytime.
 
 <p>
-  <img  src="GIFs/model.gif">
-  <img  src="GIFs/animated.gif" height=450>
+  <img  src="GIFs/models.gif" height=450>
+  <img  src="GIFs/anim.gif" height=450>
 </p>
 
 2. 3D drawing on air.
@@ -86,7 +86,7 @@ Primary Features (All in realtime):
 6. Create rooms to host your models, images and graphs to show them to others, live.
 
 <p>
-  <img  src="GIFs/live.gif">
+  <img  src="GIFs/live.gif" height=450>
 </p>
 
 Also, checkout my IGTVs on [Instagram](https://www.instagram.com/projit32/) to see the full videos of AR Studio(Former name AR Study Room) [v1](https://www.instagram.com/tv/B1lucToHrFx/?utm_source=ig_web_copy_link), [v2](https://www.instagram.com/tv/B11NjZ5n58R/?utm_source=ig_web_copy_link) and the [final teaser](https://www.instagram.com/tv/B7RVQR3pnX6/?utm_source=ig_web_copy_link).
