@@ -70,7 +70,7 @@ Primary Features (All in realtime):
 4. Place 2D photos in 3D space.
 
 <p>
-  <img  src="GIFs/photos.gif">
+  <img  src="GIFs/pics.gif">
 </p>
 
 5. Place 2D interactive graphs in 3D space.
