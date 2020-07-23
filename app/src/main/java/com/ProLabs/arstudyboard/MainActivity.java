@@ -105,7 +105,7 @@ public class MainActivity extends AppCompatActivity implements Scene.OnUpdateLis
     private int camcorderProfile=CamcorderProfile.QUALITY_1080P;
     public CloudARFragment arFragment;
     RetrofitClient retrofitClient= new RetrofitClient();
-    FloatingActionButton addBtn,refreshBtn,drawBtn,deleteBtn,helpBtn;
+    FloatingActionButton addBtn,devToggleBtn,drawBtn,deleteBtn,helpBtn;
     String Asset="";
     RecyclerView itemRecyclerView;
     public Boolean delete=false, storagePermission=false,busy=false;
@@ -151,7 +151,7 @@ public class MainActivity extends AppCompatActivity implements Scene.OnUpdateLis
         addBtn= findViewById(R.id.addbtn);
         itemRecyclerView = findViewById(R.id.itemRecyclerView);
         itemRecyclerView.setLayoutManager(new LinearLayoutManager(this));
-        refreshBtn=findViewById(R.id.refreshBtn);
+        devToggleBtn=findViewById(R.id.dev_channel_toggle);
         deleteBtn=findViewById(R.id.deleteBtn);
         drawBtn=findViewById(R.id.drawBtn);
         colorPanel = findViewById(R.id.colorPanel);
@@ -207,7 +207,6 @@ public class MainActivity extends AppCompatActivity implements Scene.OnUpdateLis
                 });
 
         helpBtn.setOnClickListener(v -> {
-            prepareTutorial();
             new TutorialBuilder(this).with(tutorials).show();
         });
         helpBtn.setOnLongClickListener(v -> {
@@ -230,14 +229,21 @@ public class MainActivity extends AppCompatActivity implements Scene.OnUpdateLis
             alertDialog.setCancelable(false)
                     .setPositiveButton("OK",(dialog, which) -> {
                         try {
-                            deleteEveryNode();
-                            firebaseManager.initializeRoom(roomNumber.getText().toString());
-                            firebaseManager.setOnChangeListeners();
+                            if(isValidRoomNumber(roomNumber.getText().toString())) {
+                                showLiveFlashbar("Please wait...",true);
+                                deleteEveryNode();
+                                firebaseManager.initializeRoom(roomNumber.getText().toString());
+                                firebaseManager.setOnChangeListeners();
 
-                        } catch (InterruptedException e) {
+                            }
+                            else
+                            {
+                                showErrorFlashbar("Invalid Room Number. Please try something with alphabets and numbers.");
+                            }
+
+                        } catch (Exception e) {
                             e.printStackTrace();
                         }
-                        showLiveFlashbar("Please wait...",true);
 
                     })
                     .setNegativeButton("Cancel",(dialog, which) -> {
@@ -285,7 +291,6 @@ public class MainActivity extends AppCompatActivity implements Scene.OnUpdateLis
             @Override
             public void onClick(View v) {
                 BaseURL= URLManager.getItemFolderUrl();
-
                 if (!isNetworkConnected()){
                     showFlashBar("Internet connection isn't available.");
                     return;
@@ -320,10 +325,17 @@ public class MainActivity extends AppCompatActivity implements Scene.OnUpdateLis
         });
 
 
-        refreshBtn.setOnClickListener((view)->{
-            refreshItemList();
-            refreshAnimatedItemList();
-            showFlashBar("Refreshed");
+        devToggleBtn.setOnClickListener((view)->{
+            URLManager.toggleChannel();
+            retrofitClient= new RetrofitClient();
+            if(URLManager.isDevChannel)
+            {
+                showFlashBar("Switched to Dev Channel");
+            }
+            else
+            {
+                showFlashBar("Stable Channel Activated");
+            }
         });
 
         deleteBtn.setOnClickListener((view)->{
@@ -468,6 +480,15 @@ public class MainActivity extends AppCompatActivity implements Scene.OnUpdateLis
             }
         });
         setUpColorPickerUi();
+
+        prepareTutorial();
+        handler.postDelayed(()->{new TutorialBuilder(this).with(tutorials).buildShowCase("First_Tutorial");},1000);
+
+    }
+
+    private boolean isValidRoomNumber(String roomNumber)
+    {
+        return (roomNumber != null && roomNumber.chars().allMatch(Character::isLetterOrDigit));
     }
 
 
@@ -492,7 +513,7 @@ public class MainActivity extends AppCompatActivity implements Scene.OnUpdateLis
                 " you can delete any model from the screen.\n\nDrawings can only be deleted from the Draw mode toolbar." +
                 "\n\nJust like Draw mode, you can't add models during Delete mode, you can disable it by pressing it again."));
 
-        tutorials.add(new Pair<View, String>(refreshBtn,"This is just to refresh the Asset list in the first button."));
+        tutorials.add(new Pair<View, String>(devToggleBtn,"This feature is under construction"));
 
         tutorials.add(new Pair<View, String>(FloatingText,"You can add texts on translucent glass on any scanned area. " +
                 "Click this button, select any of the templates, add your text and press OK.\n\n" +
@@ -514,9 +535,9 @@ public class MainActivity extends AppCompatActivity implements Scene.OnUpdateLis
                 "\n\nTap and hold to change resolution of recording. High resolution might cause frame drops."));
 
         tutorials.add(new Pair<View, String>(liveBtn,"Creating a Live session allows you to show/involve your friends to do all" +
-                " the above mentioned stuff (Except drawing). Make sure that you have scanned the area thoroughly for 30 seconds " +
-                "or more and from all the angles.\n\nCreate/Join a Virtual Room by long pressing the live button and then single tap " +
-                "to start/stop the live session. Share the virtual room number to your friends to allow them to join"));
+                " the above mentioned stuff (Except drawing). Make sure that you have scanned the area thoroughly from all sides " +
+                "for 30 seconds or more and from all the angles.\n\nCreate/Join a Virtual Room by long pressing the live button " +
+                "and then single tap to start/stop the live session. Share the virtual room number to your friends to allow them to join"));
 
         tutorials.add(new Pair<View, String>(helpBtn,"Press and hold to see the full tutorial on Youtube."));
 
@@ -527,12 +548,11 @@ public class MainActivity extends AppCompatActivity implements Scene.OnUpdateLis
      {
          Thread destroy=new Thread(()->{
              liveObjects.clear();
-             firebaseManager.destoryReferences();
+             firebaseManager.destroyReferences();
              firebaseManager = null;
              firebaseManager = new FirebaseManager(this);
          });
          destroy.start();
-         destroy.join();
      }
 
      // Delete every node
@@ -960,7 +980,7 @@ public class MainActivity extends AppCompatActivity implements Scene.OnUpdateLis
         liveBtn.setVisibility(View.GONE);
         deleteBtn.hide();
         drawBtn.hide();
-        refreshBtn.hide();
+        devToggleBtn.hide();
         helpBtn.hide();
     }
 
@@ -973,7 +993,7 @@ public class MainActivity extends AppCompatActivity implements Scene.OnUpdateLis
         liveBtn.setVisibility(View.VISIBLE);
         deleteBtn.show();
         drawBtn.show();
-        refreshBtn.show();
+        devToggleBtn.show();
         helpBtn.show();
     }
 
@@ -1467,7 +1487,7 @@ public class MainActivity extends AppCompatActivity implements Scene.OnUpdateLis
          });
          modelRenderables.clear();
          animatedAodelRenderables.clear();
-         Toast.makeText(this, "Downloads Cancelled", Toast.LENGTH_SHORT).show();
+         showFlashBar("Downloads Cancelled");
      }
 
      private void forfitRecording()
@@ -1482,14 +1502,17 @@ public class MainActivity extends AppCompatActivity implements Scene.OnUpdateLis
      protected void onDestroy() {
          super.onDestroy();
          try {
-             deleteLiveSession();
+             if(Hosting)
+             {
+                 deleteLiveSession();
+             }
              deleteEveryNode();
          } catch (InterruptedException e) {
              Toast.makeText(this, e.getMessage(), Toast.LENGTH_SHORT).show();
          }
          forfitPendingModelDownloads();
          forfitRecording();
-         Toast.makeText(this, "AR Studio Session Destroyed", Toast.LENGTH_SHORT).show();
+         Toast.makeText(this, "AR Studio has been closed", Toast.LENGTH_SHORT).show();
          overridePendingTransition(R.anim.fadeout,R.anim.fadein);
      }
 

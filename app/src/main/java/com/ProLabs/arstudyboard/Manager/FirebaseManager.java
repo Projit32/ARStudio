@@ -1,6 +1,8 @@
 package com.ProLabs.arstudyboard.Manager;
 
 import android.net.Uri;
+import android.util.Log;
+import android.widget.Toast;
 
 import com.ProLabs.arstudyboard.MainActivity;
 import com.ProLabs.arstudyboard.RenderableItems.GraphItem;
@@ -20,6 +22,8 @@ import com.google.firebase.storage.FirebaseStorage;
 import com.google.firebase.storage.StorageReference;
 import com.google.firebase.storage.UploadTask;
 
+import java.text.DecimalFormat;
+import java.text.ParseException;
 import java.text.SimpleDateFormat;
 import java.util.Date;
 import java.util.HashMap;
@@ -32,8 +36,8 @@ public class FirebaseManager {
     private MainActivity mainActivity;
     private FirebaseFirestore firestoreReference;
     private DocumentReference documentReference;
-    private CollectionReference collectionReferenceImage,collectionReferenceText,collectionReferenceModel,collectionReferenceGraph,temp;
-    private String roomNumber;
+    private volatile CollectionReference collectionReferenceImage,collectionReferenceText,collectionReferenceModel,collectionReferenceGraph,temp;
+    private String roomNumber,number;
     private StorageReference storageReference=FirebaseStorage.getInstance().getReference();
     private Queue<LiveObject> liveObjects= new LinkedList<>();
     private ListenerRegistration ImageListener,TextListener,ModelListener,GraphListner;
@@ -43,46 +47,68 @@ public class FirebaseManager {
         firestoreReference=FirebaseFirestore.getInstance();
     }
 
-    public void destoryReferences()
+    public void destroyReferences()
     {
-        ModelListener.remove();
-        ImageListener.remove();
-        TextListener.remove();
-        GraphListner.remove();
-        firestoreReference.waitForPendingWrites();
-        firestoreReference.terminate();
+        try {
+            ModelListener.remove();
+            ImageListener.remove();
+            TextListener.remove();
+            GraphListner.remove();
+            firestoreReference.waitForPendingWrites();
+            firestoreReference.terminate();
+        }
+        catch (Exception e)
+        {
+            Log.v("Firebase Manager",e.toString());
+        }
     }
 
     public boolean isRoomInitialized(){return roomNumber!=null;}
 
     public void initializeRoom(String room) throws InterruptedException {
         roomNumber="Room_"+room;
-
-        documentReference= firestoreReference.document("ARS/"+roomNumber);
+        number=room;
+        documentReference= firestoreReference.collection("ARS").document(roomNumber);
         documentReference.get().addOnSuccessListener(documentSnapshot -> {
             if(!documentSnapshot.exists())
             {
-                Map<String,Object> roomMetaData= new HashMap<>();
-                roomMetaData.put("Created On",new SimpleDateFormat("dd-MM-yyyy-hh-mm-ss").format(new Date()));
-                documentReference.set(roomMetaData)
-                        .addOnSuccessListener(aVoid -> {
-                            showLiveFlashbar("Room Created! Press the live button to start a live session.");
-                        })
-
-                        .addOnFailureListener(e -> {
-                            showErrorFlashbar("Error in Room Creation");
-                        });
+                createNewRoom();
             }
-            else {showLiveFlashbar("Room joined! Press the live  button to start a live session.");}
+            else {
+                try {
+                    checkRoomAge(documentSnapshot.getString("Created On"));
+                } catch (Exception e) {
+                    showErrorFlashbar(e.getMessage());
+                }
+            }
+
         })
         .addOnFailureListener(documentReference->showErrorFlashbar("Error fetching the room."));
 
-        //Initializing References
+        initializeReferences();
+        getLiveElementQueue();
+    }
+
+    private void createNewRoom()
+    {
+        Map<String,Object> roomMetaData= new HashMap<>();
+        roomMetaData.put("Created On",new SimpleDateFormat("dd-MM-yyyy-HH-mm-ss").format(new Date()));
+        documentReference.set(roomMetaData)
+                .addOnSuccessListener(aVoid -> {
+                    showLiveFlashbar("Room Created, the session will expire in 24 hours. Tap on the Live Button to join the room");
+                })
+
+                .addOnFailureListener(e -> {
+                    showErrorFlashbar("Error in Room Creation");
+                });
+    }
+
+    private void initializeReferences()
+    {
         collectionReferenceModel=documentReference.collection("Models");
         collectionReferenceText=documentReference.collection("Texts");
         collectionReferenceGraph=documentReference.collection("Graphs");
         collectionReferenceImage=documentReference.collection("Images");
-        getLiveElementQueue();
     }
 
     public void insertModel(ModelItem modelItem)
@@ -189,6 +215,10 @@ public class FirebaseManager {
     {
             mainActivity.showErrorFlashbar(message);
     }
+    private void showBusyLiveFlashbar(String message)
+    {
+        mainActivity.showLiveFlashbar(message,true);
+    }
 
 
     public void getLiveElementQueue() throws InterruptedException {
@@ -231,10 +261,14 @@ public class FirebaseManager {
             });
 
         });model.start();
+
         image.join();
         graph.join();
         text.join();
         model.join();
+
+
+        Toast.makeText(mainActivity, "Room is Ready", Toast.LENGTH_SHORT).show();
     }
 
     public Queue<LiveObject> getLiveObjects() {
@@ -368,9 +402,76 @@ public class FirebaseManager {
         return mainActivity.placedNode.containsKey(cloudAnchorID);
     }
 
-    private void deleteOldRoom()
-    {
+    private void checkRoomAge(String RoomDate) throws InterruptedException, ParseException {
+        double age=timeDifference(RoomDate);
+        if(age>24) {
+            initializeReferences();
+            Thread image = new Thread(() -> {
+                collectionReferenceImage.get().addOnSuccessListener(queryDocumentSnapshots -> {
+                    for (QueryDocumentSnapshot documentSnapshot : queryDocumentSnapshots) {
+                        ImageItem item = documentSnapshot.toObject(ImageItem.class);
+                        deleteAnchor(item.cloudAnchorID, MainActivity.AnchorType.PICTURE);
+                    }
+                });
+            });
+            image.start();
+            Thread graph = new Thread(() -> {
+                collectionReferenceGraph.get().addOnSuccessListener(queryDocumentSnapshots -> {
+                    for (QueryDocumentSnapshot documentSnapshot : queryDocumentSnapshots) {
+                        GraphItem item = documentSnapshot.toObject(GraphItem.class);
+                        deleteAnchor(item.cloudAnchorID, MainActivity.AnchorType.GRAPH);
+                    }
+                });
+            });
+            graph.start();
+            Thread text = new Thread(() -> {
+                collectionReferenceText.get().addOnSuccessListener(queryDocumentSnapshots -> {
+                    for (QueryDocumentSnapshot documentSnapshot : queryDocumentSnapshots) {
+                        TextItem item = documentSnapshot.toObject(TextItem.class);
+                        deleteAnchor(item.cloudAnchorID, MainActivity.AnchorType.TEXT);
+                    }
+                });
 
+            });
+            text.start();
+            Thread model = new Thread(() -> {
+                collectionReferenceModel.get().addOnSuccessListener(queryDocumentSnapshots -> {
+                    for (QueryDocumentSnapshot documentSnapshot : queryDocumentSnapshots) {
+                        ModelItem item = documentSnapshot.toObject(ModelItem.class);
+                        deleteAnchor(item.cloudAnchorID, MainActivity.AnchorType.MODEL);
+                    }
+                });
+
+            });
+            model.start();
+
+            image.join();
+            graph.join();
+            text.join();
+            model.join();
+
+
+            documentReference.delete().addOnSuccessListener(aVoid -> {
+                showBusyLiveFlashbar("Previous session of this room has expired. Creating a new session");
+                try {
+                    liveObjects.clear();
+                    initializeRoom(number);
+                } catch (Exception e) {
+                    e.printStackTrace();
+                }
+            });
+        }
+        else {
+            showLiveFlashbar("Room joined, this session will expire in "+new DecimalFormat("#0.00").format(24.0-age)+" hours. Press the live button to start live session.");
+        }
+
+    }
+
+    private double timeDifference(String roomDate) throws ParseException {
+        Date room=new SimpleDateFormat("dd-MM-yyyy-HH-mm-ss").parse(roomDate);
+        Date now = new Date();
+        long diff=now.getTime()-room.getTime();
+        return (double)diff/3600000;
     }
 
 

@@ -38,6 +38,7 @@ public class ItemListAdapter extends RecyclerView.Adapter<ItemListAdapter.ItemLi
             mainActivity.Asset=mainActivity.BaseURL+itemLists.get(i).getName();
             mainActivity.itemRecyclerView.setVisibility(View.GONE);
             mainActivity.showButtons();
+            mainActivity.showFlashBar("Tap on any plane surface to load the model.");
         });
 
     }

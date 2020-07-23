@@ -22,7 +22,7 @@
         android:layout_alignParentTop="true"
         android:layout_marginStart="15dp"
         android:layout_marginTop="25pt"
-        android:backgroundTint="#B2F5C000"
+        android:backgroundTint="#D2E19907"
         android:clickable="true"
         android:focusable="true"
         app:maxImageSize="46dp"
@@ -44,28 +44,28 @@
         android:layout_centerInParent="true"/>
 
     <com.google.android.material.floatingactionbutton.FloatingActionButton xmlns:app="http://schemas.android.com/apk/res-auto"
-        android:id="@+id/refreshBtn"
+        android:id="@+id/dev_channel_toggle"
         android:layout_width="wrap_content"
         android:layout_height="wrap_content"
         android:layout_below="@+id/deleteBtn"
         android:layout_alignParentStart="true"
         android:layout_marginStart="15dp"
         android:layout_marginTop="10dp"
-        android:backgroundTint="#B225D366"
+        android:backgroundTint="#D002B17A"
         android:clickable="true"
         android:focusable="true"
         app:maxImageSize="32dp"
-        app:srcCompat="@android:drawable/ic_popup_sync" />
+        android:src="@drawable/dev_channel" />
 
     <com.google.android.material.floatingactionbutton.FloatingActionButton
         android:id="@+id/helpBtn"
         android:layout_width="wrap_content"
         android:layout_height="wrap_content"
-        android:layout_below="@+id/refreshBtn"
+        android:layout_below="@+id/dev_channel_toggle"
         android:layout_alignParentStart="true"
         android:layout_marginStart="15dp"
         android:layout_marginTop="10dp"
-        android:backgroundTint="#673AB7"
+        android:backgroundTint="#CE5F0BF4"
         android:clickable="true"
         android:focusable="true"
         app:maxImageSize="32dp"
