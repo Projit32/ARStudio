@@ -77,7 +77,6 @@ Primary Features (All in realtime):
 
 > * Only supported extenstions are `.xls` and `.xlsx`.
 > * You can put your excel files anywhere in the phone except `Downloads`.
-> * Please don't use the first row of the excel as column headers.
 
 <p>
   <img  src="GIFs/graphs.gif">
