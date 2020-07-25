@@ -8,7 +8,7 @@ You can use services like AWS, Hostinger or GoDaddy, bt they are all paid and no
   - If you're using **XAMPP**, simply install the applicaation and grant all firewall permission,if prompted, for public and private network, you'll need it.
   - if you're using **000webhost**, sign up for a free account and register a website. Skip the tutorial by presing `It's not my first rodeo, take me to the cPanel`. 
     Register a name & a password for your website.
-* Download both the scripts from the `ARSR` folder.
+* Download both the scripts which is inside the `ARSR` folder.
   - **XAMPP** : wherever you have installed xampp, there will be a folder inside the xampp folder named as `htdocs`, i.e `xampp/htdocs`. Create a folder named as **ARSR**
   and cut-paste both the scripts in it. Lastly, create two folders named as **objects** and **AnimatedObjects** inside the `ARSR` folder.
   - **000webhost** : Rightnow, it will show you 3 options. Choose `upload your site`. Inside the `public_html` folder, add a folder namd as **ARSR**, inside which you'll
