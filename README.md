@@ -39,17 +39,15 @@ Initial Setup:
        android:value= "YOUR_API_KEY" />
 ```       
 
-* Replace `YOUR_MAIN_DOMAIN_NAME` & `YOUR_TESTING_DOMAIN_NAME` to wherever you're hosting the `ARSR` folder in the following script.
+* Replace `YOUR_MAIN_DOMAIN_NAME` to wherever you're hosting the `ARSR` folder in the following script.
 
 **app/src/main/java/com/ProLabs/arstudyboard/Manager/URLManager.java**
 
 ```
- public static String StableChannelUrl="YOUR_MAIN_DOMAIN_NAME";
- public static String DevChannelUrl="YOUR_DEV_CHANNEL_DOMAIN_NAME";
+ public static String StableChannelUrl="YOUR_DOMAIN_NAME";
 ```                
-> The purpose of having the dev channel domain name is to host the ARSR folder somewhere where you can try out your own 3D models apart from the ones already present in the ARSR 
-> folder.
-> **To setup ypur own dev channel, that is your testing domain, follow the instructions provided over [HERE](https://github.com/Projit32/ARStudio-Sceneform-SDK-1.16.0/blob/master/Model%20Hosting/).**
+
+**To setup your own 3D model hosting service follow the instructions provided over [HERE](https://github.com/Projit32/ARStudio-Sceneform-SDK-1.16.0/blob/master/Model%20Hosting/).**
 
 ## Primary Features (All in realtime):
 
