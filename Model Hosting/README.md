@@ -11,7 +11,7 @@ Alternatively, you can use services like AWS, Hostinger or GoDaddy, bt they are 
   - if you're using **000webhost**, sign up for a free account and register a website. Skip the tutorial by presing `It's not my first rodeo, take me to the cPanel`. 
     Register a name & a password for your website.
 * Download both the scripts which is inside the `APIs` folder.
-  - **XAMPP** : wherever you have installed xampp, there will be a folder inside the xampp folder named as `htdocs`, i.e `xampp/htdocs`. Create a folder named as **ARSR**
+  - **XAMPP** : wherever you have installed xampp, there will be a folder inside the xampp folder named as `htdocs`, i.e `xampp/htdocs`, create a folder named as **ARSR**
   and cut-paste both the scripts in it. Lastly, create two folders named as **objects** and **AnimatedObjects** inside the `ARSR` folder.
   - **000webhost** : Rightnow, it will show you 3 options. Choose `upload your site`. Inside the `public_html` folder, add a folder namd as **ARSR**, inside which you'll
   need to create two more folders named as **objects** and **AnimatedObjects**. Now, in that same folder, that is the **ARSR** folder, upload the scripts that you have
