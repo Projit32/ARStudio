@@ -50,7 +50,7 @@ Initial Setup:
 > The purpose of having testing domain name is to host the ARSR folder somewhere where you can try out some unknown or unstable 3D models.
 > I use this to segregate the working ones in the main domain and trial one in the testing. But make sure that the folder structure and the
 > PHP files are intact as the APIs are same. Only the 3D models can be changed.
-> **To setup ypur own dev channel, that is your testing domain, follow the instructions provided over [HERE](https://github.com/Projit32/ARStudio-Sceneform-SDK-1.16.0/blob/master/Model%20Hosting/README.md).**
+> **To setup ypur own dev channel, that is your testing domain, follow the instructions provided over [HERE](https://github.com/Projit32/ARStudio-Sceneform-SDK-1.16.0/blob/master/Model%20Hosting/).**
 
 ## Primary Features (All in realtime):
 
