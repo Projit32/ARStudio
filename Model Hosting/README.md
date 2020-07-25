@@ -12,9 +12,25 @@ you can use services like AWS, Hostinger or GoDaddy, bt they are all paid and no
   - **XAMPP** : wherever you have installed xampp, there will be a folder inside the xampp folder named as `htdocs`, i.e `xampp/htdocs`. Create a folder named as **ARSR**
   and cut-paste both the scripts in it. Lastly, create two folders named as **objects** and **AnimatedObjects** inside the `ARSR` folder.
   - **000webhost** : Rightnow, it will show you 3 options. Choose `upload your site`. Inside the `public_html` folder, add a folder namd as **ARSR**, inside which you'll
-  nned to create two more folders named as **objects** and **AnimatedObjects**. Now, in that same folder, that is the **ARSR** folder, upload the scripts that you have downloaded
-  earlier.
+  nned to create two more folders named as **objects** and **AnimatedObjects**. Now, in that same folder, that is the **ARSR** folder, upload the scripts that you have downloaded earlier.
 4. Finally, the fun part. you can browse through sites like [Google Poly](https://poly.google.com/), [SketchFab](https://sketchfab.com/) or [CGTrader](https://www.cgtrader.com/), to find 3D models that suits your needs. Just be sure that you download it in
 `GLTF` format.
   -Whenever you download something in GLTF format, there are gigh chances that the `.bin` files and the texture folder will be in a zip file. Use the [GLB Packer](https://glb-packer.glitch.me/) to pack everything in a single `.glb` file. Just extract and drag everything and drop everything in the website. the GLB will automaticlly donwload as `out.glb`. Rename the file to your wish.
   - If the model is animated, then put or upload it in the Animated object folder, else the objects folder.
+5. In the app, tap the Dev-Channel button(the 4th teal colored button on the left) and paste the URL.
+  - **XAMPP** : URL will be `127.0.0.1` by default.
+  - **000webhost** : URL will be displayed on a card when you log into the [cPanel](https://www.000webhost.com/members/website/list) of this hosting service.
+  by default, your URL should be `https://YOUR_WEBSITE_NAME.000webhostapp.com/`.
+
+**If you are cloning this repo**
+
+1. Follow the steps mentioned above
+2. Put the models from `ARSR` Folder in one hosting service and do the above mentioned steps in some other hosting service / same hosting service with a different domain name.
+3. Replace `YOUR_MAIN_DOMAIN_NAME` & `YOUR_TESTING_DOMAIN_NAME` to wherever you're hosting the `ARSR` folder in the following script.
+
+**app/src/main/java/com/ProLabs/arstudyboard/Manager/URLManager.java**
+
+```
+ public static String StableChannelUrl="YOUR_MAIN_DOMAIN_NAME";
+ public static String DevChannelUrl="YOUR_TESTING_DOMAIN_NAME";
+```                
