@@ -129,7 +129,6 @@ public class MainActivity extends AppCompatActivity implements Scene.OnUpdateLis
     ProgressBar progressBar;
     Handler handler = new Handler();
 
-
     // Anchor enum
      public enum AnchorType{
         MODEL,
@@ -326,16 +325,45 @@ public class MainActivity extends AppCompatActivity implements Scene.OnUpdateLis
 
 
         devToggleBtn.setOnClickListener((view)->{
-            URLManager.toggleChannel();
-            retrofitClient= new RetrofitClient();
-            if(URLManager.isDevChannel)
-            {
-                showFlashBar("Switched to Dev Channel");
+            if(!URLManager.DevChannelUrl.equals("")) {
+                toggleChannelURL();
             }
             else
             {
-                showFlashBar("Stable Channel Activated");
+                View v= getLayoutInflater().inflate(R.layout.url_alert_dialog,null);
+                new AlertDialog.Builder(this)
+                        .setView(v)
+                        .setPositiveButton("OK",(dialog, which) -> {
+                            EditText editText=v.findViewById(R.id.dev_url);
+                            URLManager.DevChannelUrl=editText.getText().toString();
+                            toggleChannelURL();
+                        })
+                        .setNegativeButton("Cancel",(dialog, which) -> {dialog.dismiss();})
+                        .setCancelable(false)
+                        .show();
             }
+        });
+
+        devToggleBtn.setOnLongClickListener(view->{
+            new AlertDialog.Builder(this)
+                    .setPositiveButton("Learn More", (dialog, which) -> {
+                        String url = "https://github.com/Projit32/ARStudio-Sceneform-SDK-1.16.0/tree/master/Model%20Hosting";
+                        Intent i = new Intent(Intent.ACTION_VIEW);
+                        i.setData(Uri.parse(url));
+                        startActivity(i);
+                        dialog.dismiss();
+                    })
+                    .setNegativeButton("Reset URL",(dialog, which) -> {
+                        URLManager.resetDevChannelUrl();
+                        showFlashBar("Dev Channel URL has been reset");
+                        dialog.dismiss();
+                    })
+                    .setTitle("Choose an action")
+                    .setMessage("Learn how to setup your own models using Dev Channel or reset the current Dev channel URL.")
+                    .setCancelable(true)
+                    .show();
+
+            return true;
         });
 
         deleteBtn.setOnClickListener((view)->{
@@ -491,6 +519,17 @@ public class MainActivity extends AppCompatActivity implements Scene.OnUpdateLis
         return (roomNumber != null && roomNumber.chars().allMatch(Character::isLetterOrDigit));
     }
 
+    private void toggleChannelURL()
+    {
+        URLManager.toggleChannel();
+        retrofitClient = new RetrofitClient();
+        if (URLManager.isDevChannel) {
+            showFlashBar("Switched to Dev Channel");
+        } else {
+            showFlashBar("Stable Channel Activated");
+        }
+    }
+
 
     private void prepareTutorial()
     {
@@ -513,7 +552,11 @@ public class MainActivity extends AppCompatActivity implements Scene.OnUpdateLis
                 " you can delete any model from the screen.\n\nDrawings can only be deleted from the Draw mode toolbar." +
                 "\n\nJust like Draw mode, you can't add models during Delete mode, you can disable it by pressing it again."));
 
-        tutorials.add(new Pair<View, String>(devToggleBtn,"This feature is under construction"));
+        tutorials.add(new Pair<View, String>(devToggleBtn,"This button allows you to toggle between Dev Channel and Stable" +
+                " Channel.\n\nDev channel allows you to host your own 3D models and use them. All you need to do is host your" +
+                " 3D models and the APIs to a hosting service. To learn how to host your own 3D models and to use the Dev" +
+                " Channel, press and hold this button and press LEARN MORE, or to reset the current hosting URL press" +
+                " Reset URL"));
 
         tutorials.add(new Pair<View, String>(FloatingText,"You can add texts on translucent glass on any scanned area. " +
                 "Click this button, select any of the templates, add your text and press OK.\n\n" +
@@ -1501,6 +1544,7 @@ public class MainActivity extends AppCompatActivity implements Scene.OnUpdateLis
      @Override
      protected void onDestroy() {
          super.onDestroy();
+         URLManager.resetDevChannelUrl();
          try {
              if(Hosting)
              {

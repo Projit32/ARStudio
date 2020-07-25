@@ -1,6 +1,7 @@
 package com.ProLabs.arstudyboard;
 
 
+import android.graphics.drawable.Drawable;
 import android.view.LayoutInflater;
 import android.view.View;
 import android.view.ViewGroup;
@@ -10,13 +11,15 @@ import android.widget.TextView;
 import androidx.annotation.NonNull;
 import androidx.recyclerview.widget.RecyclerView;
 
+import com.ProLabs.arstudyboard.Manager.URLManager;
 import com.ProLabs.arstudyboard.Utility.ItemList;
 
 import java.util.ArrayList;
 
 public class ItemListAdapter extends RecyclerView.Adapter<ItemListAdapter.ItemListViewHolder> {
-    ArrayList<ItemList> itemLists = new ArrayList<>();
+    public ArrayList<ItemList> itemLists = new ArrayList<>();
     MainActivity mainActivity;
+
 
     public ItemListAdapter(ArrayList<ItemList> itemLists, MainActivity context) {
         this.itemLists = itemLists;
@@ -33,6 +36,11 @@ public class ItemListAdapter extends RecyclerView.Adapter<ItemListAdapter.ItemLi
 
     @Override
     public void onBindViewHolder(@NonNull ItemListViewHolder itemListViewHolder, int i) {
+        Drawable drawable=(URLManager.isDevChannel)?
+                mainActivity.getDrawable(R.drawable.dev_itemnamebackground) :
+                mainActivity.getDrawable(R.drawable.itemnamebackground);
+
+        itemListViewHolder.relativeLayout.setBackground(drawable);
         itemListViewHolder.itemName.setText(itemLists.get(i).getName());
         itemListViewHolder.relativeLayout.setOnClickListener((view)->{
             mainActivity.Asset=mainActivity.BaseURL+itemLists.get(i).getName();

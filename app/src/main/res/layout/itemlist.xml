@@ -7,7 +7,7 @@
     android:layout_margin="10dp"
     android:layout_marginLeft="40pt"
     android:layout_marginRight="40pt"
-    android:background="@drawable/itemnamebackground">
+    >
 
 
     <TextView
