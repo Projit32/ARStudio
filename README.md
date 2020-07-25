@@ -45,11 +45,10 @@ Initial Setup:
 
 ```
  public static String StableChannelUrl="YOUR_MAIN_DOMAIN_NAME";
- public static String DevChannelUrl="YOUR_TESTING_DOMAIN_NAME";
+ public static String DevChannelUrl="YOUR_DEV_CHANNEL_DOMAIN_NAME";
 ```                
-> The purpose of having testing domain name is to host the ARSR folder somewhere where you can try out some unknown or unstable 3D models.
-> I use this to segregate the working ones in the main domain and trial one in the testing. But make sure that the folder structure and the
-> PHP files are intact as the APIs are same. Only the 3D models can be changed.
+> The purpose of having the dev channel domain name is to host the ARSR folder somewhere where you can try out your own 3D models apart from the ones already present in the ARSR 
+> folder.
 > **To setup ypur own dev channel, that is your testing domain, follow the instructions provided over [HERE](https://github.com/Projit32/ARStudio-Sceneform-SDK-1.16.0/blob/master/Model%20Hosting/).**
 
 ## Primary Features (All in realtime):
