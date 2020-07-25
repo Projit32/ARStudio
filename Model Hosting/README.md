@@ -14,5 +14,7 @@ you can use services like AWS, Hostinger or GoDaddy, bt they are all paid and no
   - **000webhost** : Rightnow, it will show you 3 options. Choose `upload your site`. Inside the `public_html` folder, add a folder namd as **ARSR**, inside which you'll
   nned to create two more folders named as **objects** and **AnimatedObjects**. Now, in that same folder, that is the **ARSR** folder, upload the scripts that you have downloaded
   earlier.
-4. Finally, the fun part. you can browse through sites like [Google Poly](), [SketchFab]() or [](), to find 3D models that suits your needs. Just be sure that you download it in
+4. Finally, the fun part. you can browse through sites like [Google Poly](https://poly.google.com/), [SketchFab](https://sketchfab.com/) or [CGTrader](https://www.cgtrader.com/), to find 3D models that suits your needs. Just be sure that you download it in
 `GLTF` format.
+  -Whenever you download something in GLTF format, there are gigh chances that the `.bin` files and the texture folder will be in a zip file. Use the [GLB Packer](https://glb-packer.glitch.me/) to pack everything in a single `.glb` file. Just extract and drag everything and drop everything in the website. the GLB will automaticlly donwload as `out.glb`. Rename the file to your wish.
+  - If the model is animated, then put or upload it in the Animated object folder, else the objects folder.
