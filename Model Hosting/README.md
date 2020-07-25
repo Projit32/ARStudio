@@ -26,4 +26,4 @@ You can use services like AWS, Hostinger or GoDaddy, bt they are all paid and no
   - **XAMPP** : URL will be `127.0.0.1` by default.
   - **000webhost** : URL will be displayed on a card when you log into the [cPanel](https://www.000webhost.com/members/website/list) of this hosting service.
   by default, your URL should be `https://YOUR_WEBSITE_NAME.000webhostapp.com/`.
-* Incase you want to change/ reset the URL from the app, just press and hold that button.
+* Incase you want to reset the URL from the app, just press and hold that button.
