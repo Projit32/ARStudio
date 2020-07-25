@@ -1,6 +1,6 @@
 # Setting up your Dev Channel
 
-**You'll need a hosting service. For that you can use [XAMPP](https://www.apachefriends.org/index.html) or [000Webhost](https://www.000webhost.com). as the FREE options**
+**You'll need a hosting service. For that you can use [XAMPP](https://www.apachefriends.org/index.html) or [000Webhost](https://www.000webhost.com) as the FREE options**
 
 You can use services like AWS, Hostinger or GoDaddy, bt they are all paid and not so easy to use. I recommend **000webhost** for this purpose.
 
