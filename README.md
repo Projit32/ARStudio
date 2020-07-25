@@ -39,13 +39,17 @@ Initial Setup:
        android:value= "YOUR_API_KEY" />
 ```       
 
-* Replace `YOUR_DOMAIN_NAME` & to wherever you're hosting the `ARSR` folder in the following folders. 
+* Replace `YOUR_MAIN_DOMAIN_NAME` & `YOUR_TESTING_DOMAIN_NAME` to wherever you're hosting the `ARSR` folder in the following folders.
 
 **app/src/main/java/com/ProLabs/arstudyboard/Manager/URLManager.java**
 
 ```
- public static String BaseUrl="YOUR_DOMAIN_NAME";
+ public static String BaseUrl="YOUR_MAIN_DOMAIN_NAME";
+ public static String DevChannelUrl="YOUR_TESTING_DOMAIN_NAME"
 ```                
+> The purpose of having testing domain name is to host the ARSR folder somewhere where you can try out some unknown or unstable 3D models.
+> I use this to segregate the working ones in the main domain and trial one in the testing. But make sure that the folder structure and the
+> PHP files are intact as the APIs are same. Only the 3D models can be changed.
 
 Primary Features (All in realtime):
 1. Load static and animated 3D Models anywhere and anytime.
