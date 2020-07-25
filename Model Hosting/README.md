@@ -1,9 +1,11 @@
 # Setting up your Dev Channel
 
-**If you're using the app from PlayStore:**
+**You need a hosting service. For that you can use [XAMPP](https://www.apachefriends.org/index.html) or [000Webhost](https://www.000webhost.com).**
 
-You need a hosting service. For that you can use [XAMPP](https://www.apachefriends.org/index.html) or [000Webhost](https://www.000webhost.com).
 You can use services like AWS, Hostinger or GoDaddy, bt they are all paid and not so easy to use. I recommend **000webhost** for this purpose.
+
+## Setup Instructions: 
+
 * setup your hosting platform.
   - If you're using **XAMPP**, simply install the applicaation and grant all firewall permission,if prompted, for public and private network, you'll need it.
   - if you're using **000webhost**, sign up for a free account and register a website. Skip the tutorial by presing `It's not my first rodeo, take me to the cPanel`. 
@@ -24,16 +26,4 @@ You can use services like AWS, Hostinger or GoDaddy, bt they are all paid and no
   - **XAMPP** : URL will be `127.0.0.1` by default.
   - **000webhost** : URL will be displayed on a card when you log into the [cPanel](https://www.000webhost.com/members/website/list) of this hosting service.
   by default, your URL should be `https://YOUR_WEBSITE_NAME.000webhostapp.com/`.
-
-**If you are cloning this repository**
-
-1. Follow the steps mentioned above
-2. Put the models from `ARSR` Folder in one hosting service and do the above mentioned steps in some other hosting service / same hosting service with a different domain name.
-3. Replace `YOUR_MAIN_DOMAIN_NAME` & `YOUR_DEV_CHANNEL_DOMAIN_NAME` to wherever you're hosting the `ARSR` folder in the following script.
-
-**app/src/main/java/com/ProLabs/arstudyboard/Manager/URLManager.java**
-
-```
- public static String StableChannelUrl="YOUR_MAIN_DOMAIN_NAME";
- public static String DevChannelUrl="YOUR_TESTING_DOMAIN_NAME";
-```                
+* Incase you want to change/ reset the URL from the app, just press and hold that button.
