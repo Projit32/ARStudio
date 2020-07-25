@@ -25,11 +25,11 @@ You can use services like AWS, Hostinger or GoDaddy, bt they are all paid and no
   - **000webhost** : URL will be displayed on a card when you log into the [cPanel](https://www.000webhost.com/members/website/list) of this hosting service.
   by default, your URL should be `https://YOUR_WEBSITE_NAME.000webhostapp.com/`.
 
-**If you are cloning this repo**
+**If you are cloning this repository**
 
 1. Follow the steps mentioned above
 2. Put the models from `ARSR` Folder in one hosting service and do the above mentioned steps in some other hosting service / same hosting service with a different domain name.
-3. Replace `YOUR_MAIN_DOMAIN_NAME` & `YOUR_TESTING_DOMAIN_NAME` to wherever you're hosting the `ARSR` folder in the following script.
+3. Replace `YOUR_MAIN_DOMAIN_NAME` & `YOUR_DEV_CHANNEL_DOMAIN_NAME` to wherever you're hosting the `ARSR` folder in the following script.
 
 **app/src/main/java/com/ProLabs/arstudyboard/Manager/URLManager.java**
 
