@@ -326,7 +326,20 @@ public class MainActivity extends AppCompatActivity implements Scene.OnUpdateLis
 
         devToggleBtn.setOnClickListener((view)->{
             if(!URLManager.DevChannelUrl.equals("")) {
-                toggleChannelURL();
+                new AlertDialog.Builder(this)
+                        .setPositiveButton("Toggle Channel", (dialog, which) -> {
+                            toggleChannelURL();
+                            dialog.dismiss();
+                        })
+                        .setNegativeButton("Reset Dev Channel URL",(dialog, which) -> {
+                            URLManager.resetDevChannelUrl();
+                            showFlashBar("Dev Channel URL has been reset");
+                            dialog.dismiss();
+                        })
+                        .setTitle("Choose an action")
+                        .setMessage("your can either toggle between channels or reset the current Dev Channel URL.")
+                        .setCancelable(true)
+                        .show();
             }
             else
             {
@@ -345,24 +358,10 @@ public class MainActivity extends AppCompatActivity implements Scene.OnUpdateLis
         });
 
         devToggleBtn.setOnLongClickListener(view->{
-            new AlertDialog.Builder(this)
-                    .setPositiveButton("Learn More", (dialog, which) -> {
-                        String url = "https://github.com/Projit32/ARStudio-Sceneform-SDK-1.16.0/tree/master/Model%20Hosting";
-                        Intent i = new Intent(Intent.ACTION_VIEW);
-                        i.setData(Uri.parse(url));
-                        startActivity(i);
-                        dialog.dismiss();
-                    })
-                    .setNegativeButton("Reset URL",(dialog, which) -> {
-                        URLManager.resetDevChannelUrl();
-                        showFlashBar("Dev Channel URL has been reset");
-                        dialog.dismiss();
-                    })
-                    .setTitle("Choose an action")
-                    .setMessage("Learn how to setup your own models using Dev Channel or reset the current Dev channel URL.")
-                    .setCancelable(true)
-                    .show();
-
+            String url = "https://github.com/Projit32/ARStudio-Sceneform-SDK-1.16.0/tree/master/Model%20Hosting";
+            Intent i = new Intent(Intent.ACTION_VIEW);
+            i.setData(Uri.parse(url));
+            startActivity(i);
             return true;
         });
 
@@ -842,14 +841,7 @@ public class MainActivity extends AppCompatActivity implements Scene.OnUpdateLis
          }
          toBeDeleted.forEach(item->{
              modelRenderables.remove(item);
-             if(!modelRenderables.isEmpty())
-             {
-                 showDownloadStatus();
-             }
-             else
-             {
-                 showFlashBar("Models Downloaded");
-             }
+             showDownloadStatus();
          });
          isProcessing=false;
      }
@@ -891,13 +883,13 @@ public class MainActivity extends AppCompatActivity implements Scene.OnUpdateLis
 
      private void showDownloadStatus()
      {
-         if (!animatedAodelRenderables.isEmpty() || !modelRenderables.isEmpty())
+         if (animatedAodelRenderables.isEmpty() && modelRenderables.isEmpty())
          {
-             showDownloadFlashbar("Downloading "+animatedAodelRenderables.size()+" Animated Model(s) & "+modelRenderables.size()+" Static Model(s).");
+             showFlashBar("Models Downloaded");
          }
          else
          {
-             showFlashBar("Models Downloaded");
+             showDownloadFlashbar("Downloading "+animatedAodelRenderables.size()+" Animated Model(s) & "+modelRenderables.size()+" Static Model(s).");
          }
 
      }
