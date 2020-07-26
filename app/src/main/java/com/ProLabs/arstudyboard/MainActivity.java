@@ -337,7 +337,7 @@ public class MainActivity extends AppCompatActivity implements Scene.OnUpdateLis
                             dialog.dismiss();
                         })
                         .setTitle("Choose an action")
-                        .setMessage("your can either toggle between channels or reset the current Dev Channel URL.")
+                        .setMessage("Your can either toggle between Dev and Stable channels or reset the current Dev Channel URL.")
                         .setCancelable(true)
                         .show();
             }

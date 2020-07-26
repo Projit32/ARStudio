@@ -9,7 +9,7 @@
         android:id="@+id/dev_url"
         android:textColor="#ffffff"
         android:textSize="15sp"
-        android:hint="Enter your URL"
+        android:hint="Enter Your Dev-Channel URL"
         android:layout_margin="10dp"
         android:textColorHint="#D8ACA0A0">
         <requestFocus/>

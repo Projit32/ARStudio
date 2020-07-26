@@ -54,8 +54,8 @@
         android:backgroundTint="#D002B17A"
         android:clickable="true"
         android:focusable="true"
-        app:maxImageSize="32dp"
-        android:src="@drawable/dev_channel" />
+        app:maxImageSize="37dp"
+        android:src="@drawable/dev_channel"/>
 
     <com.google.android.material.floatingactionbutton.FloatingActionButton
         android:id="@+id/helpBtn"
@@ -68,7 +68,7 @@
         android:backgroundTint="#CE5F0BF4"
         android:clickable="true"
         android:focusable="true"
-        app:maxImageSize="32dp"
+        app:maxImageSize="37dp"
         app:srcCompat="@drawable/ic_baseline_help_outline_24" />
 
     <LinearLayout
@@ -179,7 +179,7 @@
         android:layout_marginTop="10dp"
         android:backgroundTint="#DCFF0101"
         android:src="@android:drawable/ic_input_delete"
-        app:maxImageSize="32dp" />
+        app:maxImageSize="35dp" />
 
     <com.google.android.material.floatingactionbutton.FloatingActionButton
         android:id="@+id/drawBtn"
