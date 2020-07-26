@@ -48,10 +48,10 @@ Alternatively, you can use services like AWS, Hostinger or GoDaddy, but they are
   - Not all the models downloaded from Sketchfab and CGTraders will work. So, you have to experiment. 
   - Whenever you download something in GLTF format, there are high chances that the `.bin` files and the texture folder will be all uncompiled in a zip file. 
   Use the [GLB Packer](https://glbpacker.glitch.me/) to pack everything in a single `.glb` file. 
-  Just extract and drag everything and drop everything in the website. the GLB will automaticlly donwload as `out.glb`. Rename the file to your wish.
-  If the model is animated, then put or upload it in the Animated object folder, else the objects folder.
+  Just extract and drag everything and drop everything in the website. the GLB will automaticlly donwload as `out.glb`.
+  - Rename the file to your wish and then copy-paste or upload it to their designated folders. 
+  If the model is animated, then put or upload it in the `AnimatedObject` folder, else the `objects` folder.
 * In the app, tap the Dev-Channel button(the 4th teal colored button on the left) and paste the URL.
   - **XAMPP** : URL will be `127.0.0.1` by default.
   - **000webhost** : URL will be displayed on a card when you log into the [cPanel](https://www.000webhost.com/members/website/list) of this hosting service.
   by default, your URL should be `https://YOUR_WEBSITE_NAME.000webhostapp.com/`.
-* Incase you want to reset the URL from the app, just press and hold that button.
