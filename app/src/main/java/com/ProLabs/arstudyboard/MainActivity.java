@@ -551,11 +551,10 @@ public class MainActivity extends AppCompatActivity implements Scene.OnUpdateLis
                 " you can delete any model from the screen.\n\nDrawings can only be deleted from the Draw mode toolbar." +
                 "\n\nJust like Draw mode, you can't add models during Delete mode, you can disable it by pressing it again."));
 
-        tutorials.add(new Pair<View, String>(devToggleBtn,"This button allows you to toggle between Dev Channel and Stable" +
+        utorials.add(new Pair<View, String>(devToggleBtn,"This button allows you to toggle between Dev Channel and Stable" +
                 " Channel.\n\nDev channel allows you to host your own 3D models and use them. All you need to do is host your" +
                 " 3D models and the APIs to a hosting service. To learn how to host your own 3D models and to use the Dev" +
-                " Channel, press and hold this button and press LEARN MORE, or to reset the current hosting URL press" +
-                " Reset URL"));
+                " Channel, press and hold this button."));
 
         tutorials.add(new Pair<View, String>(FloatingText,"You can add texts on translucent glass on any scanned area. " +
                 "Click this button, select any of the templates, add your text and press OK.\n\n" +
