@@ -6,7 +6,7 @@ Alternatively, you can use services like AWS, Hostinger or GoDaddy, but they are
 
 ## Setup Instructions: 
 
-* setup your hosting platform.
+* Setup your hosting platform.
   - If you're using **XAMPP**, simply install the applicaation and grant all firewall permission, if prompted, for public and private network, you'll need it.
   - if you're using **000webhost**, sign up for a free account and you'll be assigned website. Skip the tutorial by presing `It's not my first rodeo, take me to the cPanel`. 
     Register a name & a password for your website.
