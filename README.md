@@ -32,7 +32,7 @@ Pre-requisits:
 
 Initial Setup:
 * A server, you can use xampp, where you can run PHP and host the folder `ARSR`.
-* The CloudAnchor API key needs to be added in `manifest.xml` in:
+* The CloudAnchor API key needs to be added in `AndroidManifest.xml` in:
 ```
 <meta-data
        android:name="com.google.android.ar.API_KEY"
