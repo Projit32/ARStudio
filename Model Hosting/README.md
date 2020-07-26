@@ -14,9 +14,8 @@ Alternatively, you can use services like AWS, Hostinger or GoDaddy, but they are
   - **XAMPP** : wherever you have installed xampp, there will be a folder inside the xampp folder named as `htdocs`, i.e `xampp/htdocs`, create a folder inside htdocs
   named as **ARSR** and cut-paste both the scripts in it. Lastly, create two folders named as **objects** and **AnimatedObjects** inside the `ARSR` folder.
   
-  Your folder structure should look like this:
-  
- ``` 
+  Your folder structure should look something like this:
+  ``` 
   +-- Xampp
   |     +-- htdocs (find this folder & go inside)
   |     |     +-- ARSR (Create this as new folder and go inside)
@@ -32,7 +31,8 @@ Alternatively, you can use services like AWS, Hostinger or GoDaddy, but they are
   need to create two more folders named as **objects** and **AnimatedObjects**. Now, in that same folder, that is the **ARSR** folder, upload the scripts that you have
   downloaded earlier.
   
- ``` 
+  Folder Structure:
+  ``` 
   +-- /
   |     +-- tmp
   |     +-- public_html (Go inside this folder)
@@ -42,7 +42,6 @@ Alternatively, you can use services like AWS, Hostinger or GoDaddy, but they are
   |     |      |    +-- AnimatedObjects.php (drag and drop these from your computer)
   |     |      |    +-- objects.php (drag and drop these from your computer)
   ```
-  
 * Finally, the fun part. you can browse through sites like [Google Poly](https://poly.google.com/), [SketchFab](https://sketchfab.com/) or [CGTrader](https://www.cgtrader.com/), to find 3D models that suits your needs. Just be sure that you download it in
 `GLTF` format.
   - Make sure that you don't download heavy models which is above 70-100 MB in size.
