@@ -31,7 +31,7 @@ Alternatively, you can use services like AWS, Hostinger or GoDaddy, but they are
   need to create two more folders named as **objects** and **AnimatedObjects**. Now, in that same folder, that is the **ARSR** folder, upload the scripts that you have
   downloaded earlier.
   
-  Folder Structure:
+  Your folder structure should look something like this:
   ``` 
   +-- /
   |     +-- tmp
