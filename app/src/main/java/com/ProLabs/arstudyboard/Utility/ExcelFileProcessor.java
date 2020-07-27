@@ -1,13 +1,10 @@
 package com.ProLabs.arstudyboard.Utility;
 
 import android.content.Context;
-
 import android.net.Uri;
-
 import android.os.Handler;
 import android.os.Looper;
 import android.widget.Toast;
-
 
 import org.apache.poi.hssf.usermodel.HSSFDateUtil;
 import org.apache.poi.hssf.usermodel.HSSFWorkbook;
@@ -19,8 +16,6 @@ import org.apache.poi.ss.usermodel.Sheet;
 import org.apache.poi.ss.usermodel.Workbook;
 import org.apache.poi.xssf.usermodel.XSSFWorkbook;
 
-import java.io.File;
-import java.io.FileInputStream;
 import java.io.InputStream;
 import java.text.SimpleDateFormat;
 import java.util.ArrayList;
@@ -41,10 +36,8 @@ public class ExcelFileProcessor {
 
     public void readExcelFileFromAssets() {
         try {
-            InputStream myInput;
-            String path=RealPathUtil.getRealPath(context,uri);
-            File file = new File(path);
-            myInput = new FileInputStream(file);
+            String path=uri.getPath();//RealPathUtil.getRealPath(context,uri);
+            InputStream myInput = context.getContentResolver().openInputStream(uri);
             Workbook workbook = null;
             if(path.toLowerCase().endsWith("xlsx")){
                 workbook = new XSSFWorkbook(myInput);

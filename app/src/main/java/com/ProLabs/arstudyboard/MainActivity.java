@@ -325,7 +325,7 @@ public class MainActivity extends AppCompatActivity implements Scene.OnUpdateLis
 
 
         devToggleBtn.setOnClickListener((view)->{
-            if(!URLManager.DevChannelUrl.equals("")) {
+            if(!URLManager.DevChannelUrl.isEmpty()) {
                 new AlertDialog.Builder(this)
                         .setPositiveButton("Toggle Channel", (dialog, which) -> {
                             toggleChannelURL();
@@ -348,8 +348,14 @@ public class MainActivity extends AppCompatActivity implements Scene.OnUpdateLis
                         .setView(v)
                         .setPositiveButton("OK",(dialog, which) -> {
                             EditText editText=v.findViewById(R.id.dev_url);
-                            URLManager.DevChannelUrl=editText.getText().toString();
-                            toggleChannelURL();
+                            if(!editText.getText().toString().isEmpty()) {
+                                URLManager.DevChannelUrl = editText.getText().toString();
+                                toggleChannelURL();
+                            }
+                            else
+                            {
+                                showErrorFlashbar("Empty URL");
+                            }
                         })
                         .setNegativeButton("Cancel",(dialog, which) -> {dialog.dismiss();})
                         .setCancelable(false)
@@ -410,7 +416,7 @@ public class MainActivity extends AppCompatActivity implements Scene.OnUpdateLis
             storagePermission=checkStoragePermission();
             if(videoRecorder== null)
             {
-                videoRecorder=new VideoRecorder();
+                videoRecorder=new VideoRecorder(this);
                 videoRecorder.setSceneView(arFragment.getArSceneView());
             }
             if(storagePermission) {
@@ -551,7 +557,7 @@ public class MainActivity extends AppCompatActivity implements Scene.OnUpdateLis
                 " you can delete any model from the screen.\n\nDrawings can only be deleted from the Draw mode toolbar." +
                 "\n\nJust like Draw mode, you can't add models during Delete mode, you can disable it by pressing it again."));
 
-        utorials.add(new Pair<View, String>(devToggleBtn,"This button allows you to toggle between Dev Channel and Stable" +
+        tutorials.add(new Pair<View, String>(devToggleBtn,"This button allows you to toggle between Dev Channel and Stable" +
                 " Channel.\n\nDev channel allows you to host your own 3D models and use them. All you need to do is host your" +
                 " 3D models and the APIs to a hosting service. To learn how to host your own 3D models and to use the Dev" +
                 " Channel, press and hold this button."));
@@ -813,7 +819,7 @@ public class MainActivity extends AppCompatActivity implements Scene.OnUpdateLis
          showDownloadStatus();
      }
 
-     private void checkModelDownloadStatus()
+     private synchronized void checkModelDownloadStatus()
      {
          if (isProcessing || modelRenderables.isEmpty())
          {
@@ -846,7 +852,7 @@ public class MainActivity extends AppCompatActivity implements Scene.OnUpdateLis
      }
 
 
-     private void checkAnimatedDownloadstatus()
+     private synchronized void checkAnimatedDownloadstatus()
      {
 
          if (isProcessing || animatedAodelRenderables.isEmpty())
@@ -1122,7 +1128,7 @@ public class MainActivity extends AppCompatActivity implements Scene.OnUpdateLis
         controlPanel.setVisibility(View.VISIBLE);
     }
 
-    private void animateAvailableAnimatedModels()
+    private synchronized void animateAvailableAnimatedModels()
     {
         animationManagers.forEach(animationManager -> {
             animationManager.animateModel();
@@ -1144,7 +1150,7 @@ public class MainActivity extends AppCompatActivity implements Scene.OnUpdateLis
      TextItem textItem;
      GraphItem graphItem;
      ModelItem modelItem;
-     private void checkQueue() {
+     private synchronized void checkQueue() {
         if(Hosting && !liveObjects.isEmpty())
         {
             if(appAnchorState!=AppAnchorState.HOSTING && appAnchorState!=AppAnchorState.RESOLVING)
@@ -1237,7 +1243,7 @@ public class MainActivity extends AppCompatActivity implements Scene.OnUpdateLis
                  });
                  readExcel.start();
                  readExcel.join();
-                 showFlashBar("Tap on the plane to add the graph.");
+                 showFlashBar("Tap on a surface to place a graph.");
                  arFragment.setOnTapArPlaneListener(addFloatingGraph);
              }
              catch (Exception e)

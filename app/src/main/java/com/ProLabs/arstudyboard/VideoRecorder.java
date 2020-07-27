@@ -1,14 +1,22 @@
 package com.ProLabs.arstudyboard;
 
 
+import android.content.ContentValues;
 import android.content.Context;
 import android.content.res.Configuration;
 import android.media.CamcorderProfile;
 import android.media.MediaRecorder;
+import android.net.Uri;
+import android.os.Build;
 import android.os.Environment;
+import android.os.Handler;
+import android.os.Looper;
+import android.os.ParcelFileDescriptor;
+import android.provider.MediaStore;
 import android.util.Log;
 import android.util.Size;
 import android.view.Surface;
+import android.widget.Toast;
 
 import com.google.ar.sceneform.SceneView;
 
@@ -40,7 +48,14 @@ public class VideoRecorder {
     private int bitRate = DEFAULT_BITRATE;
     private int frameRate = DEFAULT_FRAMERATE;
     private Surface encoderSurface;
+    private Context context;
+    private ParcelFileDescriptor fileDescriptor;
+    private Handler handler = new Handler(Looper.getMainLooper());
 
+    public VideoRecorder(Context context) {
+        this.context = context;
+        recordingVideoFlag = false;
+    }
 
     public int getFrameRate() {
         return frameRate;
@@ -61,10 +76,6 @@ public class VideoRecorder {
             CamcorderProfile.QUALITY_HIGH,
             CamcorderProfile.QUALITY_LOW
     };
-
-    public VideoRecorder() {
-        recordingVideoFlag = false;
-    }
 
     public File getVideoPath() {
         return videoPath;
@@ -119,22 +130,46 @@ public class VideoRecorder {
     }
 
     private void buildFilename() {
-        if (videoDirectory == null) {
-            videoDirectory =
+        videoBaseName = "ARS_"+Long.toHexString(System.currentTimeMillis()) + ".mp4";
+        if (Build.VERSION.SDK_INT >= Build.VERSION_CODES.Q) {
+            try {
+                videoPath=null;
+                ContentValues values = new ContentValues(4);
+                values.put(MediaStore.Video.Media.DISPLAY_NAME, videoBaseName);
+                values.put(MediaStore.Video.Media.DATE_ADDED, (int) (System.currentTimeMillis() / 1000));
+                values.put(MediaStore.Video.Media.MIME_TYPE, "video/mp4");
+                values.put(MediaStore.Video.Media.RELATIVE_PATH, Environment.DIRECTORY_MOVIES + "/ARStudio/");
+
+                Uri uri = context.getContentResolver().insert(MediaStore.Video.Media.EXTERNAL_CONTENT_URI, values);
+                fileDescriptor = context.getContentResolver().openFileDescriptor(uri, "w");
+            }
+            catch (Exception e)
+            {
+                handler.post(()->{
+                    Toast.makeText(context, e.getMessage(), Toast.LENGTH_SHORT).show();
+                });
+            }
+        }
+        else
+        {
+
+            if (videoDirectory == null) {
+                videoDirectory =
+                        new File(
+                                Environment.getExternalStoragePublicDirectory(Environment.DIRECTORY_MOVIES)
+                                        + "/ARStudio");
+            }
+
+            videoPath =
                     new File(
-                            Environment.getExternalStoragePublicDirectory(Environment.DIRECTORY_PICTURES)
-                                    + "/ARStudio");
+                            videoDirectory, videoBaseName);
+            File dir = videoPath.getParentFile();
+            if (!dir.exists()) {
+                dir.mkdirs();
+            }
         }
-        if (videoBaseName == null || videoBaseName.isEmpty()) {
-            videoBaseName = "ARS_";
-        }
-        videoPath =
-                new File(
-                        videoDirectory, videoBaseName + Long.toHexString(System.currentTimeMillis()) + ".mp4");
-        File dir = videoPath.getParentFile();
-        if (!dir.exists()) {
-            dir.mkdirs();
-        }
+
+
     }
 
     private void stopRecordingVideo() {
@@ -154,12 +189,19 @@ public class VideoRecorder {
 
         mediaRecorder.setVideoSource(MediaRecorder.VideoSource.SURFACE);
         mediaRecorder.setOutputFormat(MediaRecorder.OutputFormat.MPEG_4);
-
-        mediaRecorder.setOutputFile(videoPath.getAbsolutePath());
         mediaRecorder.setVideoEncodingBitRate(bitRate);
         mediaRecorder.setVideoFrameRate(frameRate);
         mediaRecorder.setVideoSize(videoSize.getWidth(), videoSize.getHeight());
         mediaRecorder.setVideoEncoder(videoCodec);
+
+        if(videoPath==null)
+        {
+            mediaRecorder.setOutputFile(fileDescriptor.getFileDescriptor());
+        }
+        else
+        {
+            mediaRecorder.setOutputFile(videoPath.getAbsolutePath());
+        }
 
         mediaRecorder.prepare();
 
