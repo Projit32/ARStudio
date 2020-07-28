@@ -130,10 +130,10 @@ public class VideoRecorder {
     }
 
     private void buildFilename() {
-        videoBaseName = "ARS_"+Long.toHexString(System.currentTimeMillis()) + ".mp4";
-        if (Build.VERSION.SDK_INT >= Build.VERSION_CODES.Q) {
-            try {
-                videoPath=null;
+        try {
+            videoBaseName = "ARS_" + Long.toHexString(System.currentTimeMillis()) + ".mp4";
+            if (Build.VERSION.SDK_INT >= Build.VERSION_CODES.Q) {
+                videoPath = null;
                 ContentValues values = new ContentValues(4);
                 values.put(MediaStore.Video.Media.DISPLAY_NAME, videoBaseName);
                 values.put(MediaStore.Video.Media.DATE_ADDED, (int) (System.currentTimeMillis() / 1000));
@@ -142,31 +142,29 @@ public class VideoRecorder {
 
                 Uri uri = context.getContentResolver().insert(MediaStore.Video.Media.EXTERNAL_CONTENT_URI, values);
                 fileDescriptor = context.getContentResolver().openFileDescriptor(uri, "w");
-            }
-            catch (Exception e)
-            {
-                handler.post(()->{
-                    Toast.makeText(context, e.getMessage(), Toast.LENGTH_SHORT).show();
-                });
+            } else {
+
+                if (videoDirectory == null) {
+                    videoDirectory =
+                            new File(
+                                    Environment.getExternalStoragePublicDirectory(Environment.DIRECTORY_MOVIES)
+                                            + "/ARStudio");
+                }
+
+                videoPath =
+                        new File(
+                                videoDirectory, videoBaseName);
+                File dir = videoPath.getParentFile();
+                if (!dir.exists()) {
+                    dir.mkdirs();
+                }
             }
         }
-        else
+        catch (Exception e)
         {
-
-            if (videoDirectory == null) {
-                videoDirectory =
-                        new File(
-                                Environment.getExternalStoragePublicDirectory(Environment.DIRECTORY_MOVIES)
-                                        + "/ARStudio");
-            }
-
-            videoPath =
-                    new File(
-                            videoDirectory, videoBaseName);
-            File dir = videoPath.getParentFile();
-            if (!dir.exists()) {
-                dir.mkdirs();
-            }
+            handler.post(()->{
+                Toast.makeText(context, e.getMessage(), Toast.LENGTH_SHORT).show();
+            });
         }
 
 

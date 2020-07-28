@@ -36,7 +36,7 @@ public class ExcelFileProcessor {
 
     public void readExcelFileFromAssets() {
         try {
-            String path=uri.getPath();//RealPathUtil.getRealPath(context,uri);
+            String path=uri.getPath();
             InputStream myInput = context.getContentResolver().openInputStream(uri);
             Workbook workbook = null;
             if(path.toLowerCase().endsWith("xlsx")){

@@ -118,7 +118,7 @@ public class FirebaseManager {
                     showLiveFlashbar("Anchor Hosted!");
                 })
                 .addOnFailureListener(e -> {
-                    showErrorFlashbar(e.toString());
+                    showErrorFlashbar(e.getMessage());
                 })
                 .addOnCompleteListener(task -> {
                     String docId=task.getResult().getId();
@@ -135,7 +135,7 @@ public class FirebaseManager {
                     showLiveFlashbar("Anchor Hosted!");
                 })
                 .addOnFailureListener(e -> {
-                    showErrorFlashbar(e.toString());
+                    showErrorFlashbar(e.getMessage());
                 })
                 .addOnCompleteListener(task -> {
                     String docId=task.getResult().getId();
@@ -154,7 +154,7 @@ public class FirebaseManager {
                     showLiveFlashbar("Anchor Hosted!");
                 })
                 .addOnFailureListener(e -> {
-                    showErrorFlashbar(e.toString());
+                    showErrorFlashbar(e.getMessage());
                 })
                 .addOnCompleteListener(task -> {
                     String docId=task.getResult().getId();
@@ -172,7 +172,7 @@ public class FirebaseManager {
                     showLiveFlashbar("Anchor Hosted!");
                 })
                 .addOnFailureListener(e -> {
-                    showErrorFlashbar(e.toString());
+                    showErrorFlashbar(e.getMessage());
                 })
                 .addOnCompleteListener(task -> {
                     String docId=task.getResult().getId();
