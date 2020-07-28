@@ -51,7 +51,7 @@ Alternatively, you can use services like AWS, Hostinger or GoDaddy, but they are
   Just extract and drag everything and drop everything in the website. the GLB will automaticlly donwload as `out.glb`.
   - Rename the file to your wish and then copy-paste or upload it to their designated folders. 
   If the model is animated, then put or upload it in the `AnimatedObject` folder, else the `objects` folder.
-* In the app, tap the Dev-Channel button(the 4th teal colored button on the left) and paste the URL.
+* In the app, tap the Dev-Channel button(the 4th teal colored button on the left) and paste the URL in it. Finally, then press the + button to see the list of your models. 
   - **XAMPP** : URL will be `127.0.0.1` by default.
   - **000webhost** : URL will be displayed on a card when you log into the [cPanel](https://www.000webhost.com/members/website/list) of this hosting service.
   by default, your URL should be `https://YOUR_WEBSITE_NAME.000webhostapp.com/`.
