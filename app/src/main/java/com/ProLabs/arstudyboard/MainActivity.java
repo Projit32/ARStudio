@@ -819,7 +819,7 @@ public class MainActivity extends AppCompatActivity implements Scene.OnUpdateLis
          showDownloadStatus();
      }
 
-     private synchronized void checkModelDownloadStatus()
+     private void checkModelDownloadStatus()
      {
          if (isProcessing || modelRenderables.isEmpty())
          {
@@ -852,7 +852,7 @@ public class MainActivity extends AppCompatActivity implements Scene.OnUpdateLis
      }
 
 
-     private synchronized void checkAnimatedDownloadstatus()
+     private void checkAnimatedDownloadstatus()
      {
 
          if (isProcessing || animatedAodelRenderables.isEmpty())
@@ -1128,11 +1128,9 @@ public class MainActivity extends AppCompatActivity implements Scene.OnUpdateLis
         controlPanel.setVisibility(View.VISIBLE);
     }
 
-    private synchronized void animateAvailableAnimatedModels()
+    private void animateAvailableAnimatedModels()
     {
-        animationManagers.forEach(animationManager -> {
-            animationManager.animateModel();
-        });
+        animationManagers.forEach(AnimationManager::animateModel);
     }
 
     @Override

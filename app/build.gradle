@@ -8,8 +8,8 @@ android {
         applicationId "com.ProLabs.arstudyboard"
         minSdkVersion 26
         targetSdkVersion 30
-        versionCode 19
-        versionName "5.2.0"
+        versionCode 20
+        versionName "5.2.1"
         multiDexEnabled true
         testInstrumentationRunner "androidx.test.runner.AndroidJUnitRunner"
     }
