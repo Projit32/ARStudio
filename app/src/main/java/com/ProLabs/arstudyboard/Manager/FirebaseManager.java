@@ -2,7 +2,6 @@ package com.ProLabs.arstudyboard.Manager;
 
 import android.net.Uri;
 import android.util.Log;
-import android.widget.Toast;
 
 import com.ProLabs.arstudyboard.MainActivity;
 import com.ProLabs.arstudyboard.RenderableItems.GraphItem;
@@ -27,9 +26,7 @@ import java.text.ParseException;
 import java.text.SimpleDateFormat;
 import java.util.Date;
 import java.util.HashMap;
-import java.util.LinkedList;
 import java.util.Map;
-import java.util.Queue;
 
 public class FirebaseManager {
 
@@ -39,8 +36,7 @@ public class FirebaseManager {
     private volatile CollectionReference collectionReferenceImage,collectionReferenceText,collectionReferenceModel,collectionReferenceGraph,temp;
     private String roomNumber,number;
     private StorageReference storageReference=FirebaseStorage.getInstance().getReference();
-    private Queue<LiveObject> liveObjects= new LinkedList<>();
-    private ListenerRegistration ImageListener,TextListener,ModelListener,GraphListner;
+    private ListenerRegistration ImageListener,TextListener,ModelListener,GraphListener;
 
     public FirebaseManager(MainActivity mainActivity) {
         this.mainActivity = mainActivity;
@@ -53,7 +49,7 @@ public class FirebaseManager {
             ModelListener.remove();
             ImageListener.remove();
             TextListener.remove();
-            GraphListner.remove();
+            GraphListener.remove();
             firestoreReference.waitForPendingWrites();
             firestoreReference.terminate();
         }
@@ -86,7 +82,6 @@ public class FirebaseManager {
         .addOnFailureListener(documentReference->showErrorFlashbar("Error fetching the room."));
 
         initializeReferences();
-        getLiveElementQueue();
     }
 
     private void createNewRoom()
@@ -180,7 +175,6 @@ public class FirebaseManager {
                     documentReference.update("documentID",docId);
                     imageItem.setdocumentID(docId);
                 });
-        //setOnChangeListeners();
     }
 
     public void uploadImage(byte[] imagebytes, ImageItem imageItem)
@@ -215,12 +209,9 @@ public class FirebaseManager {
     {
             mainActivity.showErrorFlashbar(message);
     }
-    private void showBusyLiveFlashbar(String message)
-    {
-        mainActivity.showLiveFlashbar(message,true);
-    }
+    private void showBusyLiveFlashbar(String message) { mainActivity.showLiveFlashbar(message,true); }
 
-
+    /*
     public void getLiveElementQueue() throws InterruptedException {
 
         Thread image= new Thread(()->{
@@ -228,7 +219,7 @@ public class FirebaseManager {
                 for(QueryDocumentSnapshot documentSnapshot:queryDocumentSnapshots)
                 {
                     ImageItem item=documentSnapshot.toObject(ImageItem.class);
-                    liveObjects.add(new LiveObject(MainActivity.AnchorType.PICTURE,item));
+                    mainActivity.liveObjects.add(new LiveObject(MainActivity.AnchorType.PICTURE,item));
                 }
             });
         });image.start();
@@ -237,7 +228,7 @@ public class FirebaseManager {
                 for(QueryDocumentSnapshot documentSnapshot:queryDocumentSnapshots)
                 {
                     GraphItem item=documentSnapshot.toObject(GraphItem.class);
-                    liveObjects.add(new LiveObject(MainActivity.AnchorType.GRAPH,item));
+                    mainActivity.liveObjects.add(new LiveObject(MainActivity.AnchorType.GRAPH,item));
                 }
             });
         });graph.start();
@@ -246,7 +237,7 @@ public class FirebaseManager {
                 for(QueryDocumentSnapshot documentSnapshot:queryDocumentSnapshots)
                 {
                     TextItem item=documentSnapshot.toObject(TextItem.class);
-                    liveObjects.add(new LiveObject(MainActivity.AnchorType.TEXT,item));
+                    mainActivity.liveObjects.add(new LiveObject(MainActivity.AnchorType.TEXT,item));
                 }
             });
 
@@ -256,7 +247,7 @@ public class FirebaseManager {
                 for(QueryDocumentSnapshot documentSnapshot:queryDocumentSnapshots)
                 {
                     ModelItem item=documentSnapshot.toObject(ModelItem.class);
-                    liveObjects.add(new LiveObject(MainActivity.AnchorType.MODEL,item));
+                    mainActivity.liveObjects.add(new LiveObject(MainActivity.AnchorType.MODEL,item));
                 }
             });
 
@@ -267,13 +258,9 @@ public class FirebaseManager {
         text.join();
         model.join();
 
-
-        Toast.makeText(mainActivity, "Room is Ready", Toast.LENGTH_SHORT).show();
     }
 
-    public Queue<LiveObject> getLiveObjects() {
-        return liveObjects;
-    }
+     */
 
     public void setOnChangeListeners()
     {
@@ -343,7 +330,7 @@ public class FirebaseManager {
                 }
             }
         });
-        GraphListner=collectionReferenceGraph.addSnapshotListener(mainActivity,(queryDocumentSnapshots, e) -> {
+        GraphListener=collectionReferenceGraph.addSnapshotListener(mainActivity,(queryDocumentSnapshots, e) -> {
             if (e != null) {
                 return;
             }
@@ -454,7 +441,7 @@ public class FirebaseManager {
             documentReference.delete().addOnSuccessListener(aVoid -> {
                 showBusyLiveFlashbar("Previous session of this room has expired. Creating a new session");
                 try {
-                    liveObjects.clear();
+                    mainActivity.liveObjects.clear();
                     initializeRoom(number);
                 } catch (Exception e) {
                     e.printStackTrace();

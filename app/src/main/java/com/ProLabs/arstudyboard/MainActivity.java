@@ -233,7 +233,6 @@ public class MainActivity extends AppCompatActivity implements Scene.OnUpdateLis
                                 deleteEveryNode();
                                 firebaseManager.initializeRoom(roomNumber.getText().toString());
                                 firebaseManager.setOnChangeListeners();
-
                             }
                             else
                             {
@@ -268,11 +267,6 @@ public class MainActivity extends AppCompatActivity implements Scene.OnUpdateLis
             Hosting=!Hosting;
             if(Hosting) {
                 showLiveFlashbar("Live session started",false);
-                try {
-                    liveObjects = new LinkedList<>(firebaseManager.getLiveObjects());
-                } catch (Exception e) {
-                    showErrorFlashbar(e.getMessage());
-                }
             }
             else
             {
@@ -819,7 +813,7 @@ public class MainActivity extends AppCompatActivity implements Scene.OnUpdateLis
          showDownloadStatus();
      }
 
-     private void checkModelDownloadStatus()
+     private synchronized void checkModelDownloadStatus()
      {
          if (isProcessing || modelRenderables.isEmpty())
          {
@@ -852,7 +846,7 @@ public class MainActivity extends AppCompatActivity implements Scene.OnUpdateLis
      }
 
 
-     private void checkAnimatedDownloadstatus()
+     private synchronized void checkAnimatedDownloadstatus()
      {
 
          if (isProcessing || animatedAodelRenderables.isEmpty())
