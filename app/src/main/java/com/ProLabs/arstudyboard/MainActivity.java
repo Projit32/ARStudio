@@ -9,7 +9,8 @@ import android.content.pm.PackageManager;
 import android.graphics.Bitmap;
 import android.media.CamcorderProfile;
 import android.net.ConnectivityManager;
-import android.net.NetworkInfo;
+import android.net.Network;
+import android.net.NetworkRequest;
 import android.net.Uri;
 import android.os.Bundle;
 import android.os.Handler;
@@ -128,6 +129,7 @@ public class MainActivity extends AppCompatActivity implements Scene.OnUpdateLis
     ArrayList<AnimationManager> animationManagers= new ArrayList<>();
     ProgressBar progressBar;
     Handler handler = new Handler();
+    public static Boolean NetworkAvailable=true;
 
     // Anchor enum
      public enum AnchorType{
@@ -170,346 +172,346 @@ public class MainActivity extends AppCompatActivity implements Scene.OnUpdateLis
         handler.postDelayed(()->{showFlashBar("Press the + button to add objects to the screen");},550);
 
         //AR Fragment
+        try {
 
-        arFragment= (CloudARFragment) getSupportFragmentManager().findFragmentById(R.id.arFragment);
-        arFragment.getArSceneView().getPlaneRenderer().setEnabled(true);
+            arFragment = (CloudARFragment) getSupportFragmentManager().findFragmentById(R.id.arFragment);
+            arFragment.getArSceneView().getPlaneRenderer().setEnabled(true);
 
-        arFragment.setOnTapArPlaneListener(addObjects);
-        arFragment.getArSceneView().getScene().addOnUpdateListener(this);
+            arFragment.setOnTapArPlaneListener(addObjects);
+            arFragment.getArSceneView().getScene().addOnUpdateListener(this);
 
-        //Drawing Part
-        MaterialFactory.makeOpaqueWithColor(this, WHITE)
-                .thenAccept(material1 -> material = material1.makeCopy())
-                .exceptionally(
-                        throwable -> {
-                            displayError(throwable);
-                            throw new CompletionException(throwable);
-                        });
+            //Drawing Part
+            MaterialFactory.makeOpaqueWithColor(this, WHITE)
+                    .thenAccept(material1 -> material = material1.makeCopy())
+                    .exceptionally(
+                            throwable -> {
+                                displayError(throwable);
+                                throw new CompletionException(throwable);
+                            });
 
-        ImageView clearButton = findViewById(R.id.clearButton);
-        clearButton.setOnClickListener(
-                v -> {
-                    for (Stroke stroke : strokes) {
-                        stroke.clear();
-                    }
-                    strokes.clear();
-                });
-        ImageView undoButton = findViewById(R.id.undoButton);
-        undoButton.setOnClickListener(
-                v -> {
-                    if (strokes.size() < 1) {
-                        return;
-                    }
-                    int lastIndex = strokes.size() - 1;
-                    strokes.get(lastIndex).clear();
-                    strokes.remove(lastIndex);
-                });
-
-        helpBtn.setOnClickListener(v -> {
-            new TutorialBuilder(this).with(tutorials).show();
-        });
-        helpBtn.setOnLongClickListener(v -> {
-            String url = "https://youtu.be/TLXhzyL4WCE";
-            Intent i = new Intent(Intent.ACTION_VIEW);
-            i.setData(Uri.parse(url));
-            startActivity(i);
-            return true;
-        });
-
-        //Button Functons
-        liveBtn.setOnLongClickListener(v -> {
-            if (!isNetworkConnected()){
-                showFlashBar("Internet connection isn't available.");
-                return false;
-            }
-            View roomView= LayoutInflater.from(this).inflate(R.layout.roomnumberalert,null);
-            android.app.AlertDialog.Builder alertDialog = new android.app.AlertDialog.Builder(this).setView(roomView);
-            EditText roomNumber= roomView.findViewById(R.id.inputRoomNumber);
-            alertDialog.setCancelable(false)
-                    .setPositiveButton("OK",(dialog, which) -> {
-                        try {
-                            if(isValidRoomNumber(roomNumber.getText().toString())) {
-                                showLiveFlashbar("Please wait...",true);
-                                deleteEveryNode();
-                                firebaseManager.initializeRoom(roomNumber.getText().toString());
-                                firebaseManager.setOnChangeListeners();
-                            }
-                            else
-                            {
-                                showErrorFlashbar("Invalid Room Number. Please try something with alphabets and numbers.");
-                            }
-
-                        } catch (Exception e) {
-                            e.printStackTrace();
+            ImageView clearButton = findViewById(R.id.clearButton);
+            clearButton.setOnClickListener(
+                    v -> {
+                        for (Stroke stroke : strokes) {
+                            stroke.clear();
                         }
-
-                    })
-                    .setNegativeButton("Cancel",(dialog, which) -> {
-                        dialog.cancel();
+                        strokes.clear();
+                    });
+            ImageView undoButton = findViewById(R.id.undoButton);
+            undoButton.setOnClickListener(
+                    v -> {
+                        if (strokes.size() < 1) {
+                            return;
+                        }
+                        int lastIndex = strokes.size() - 1;
+                        strokes.get(lastIndex).clear();
+                        strokes.remove(lastIndex);
                     });
 
-            //showing
-            alertDialog.create().show();
-            return true;
-        });
+            helpBtn.setOnClickListener(v -> {
+                new TutorialBuilder(this).with(tutorials).show();
+            });
+            helpBtn.setOnLongClickListener(v -> {
+                String url = "https://youtu.be/TLXhzyL4WCE";
+                Intent i = new Intent(Intent.ACTION_VIEW);
+                i.setData(Uri.parse(url));
+                startActivity(i);
+                return true;
+            });
 
-        liveBtn.setOnClickListener(v -> {
-
-            if (!isNetworkConnected()){
-                showFlashBar("Internet connection isn't available.");
-                return;
-            }
-            if(!firebaseManager.isRoomInitialized())
-            {
-                showLiveFlashbar("Long Press on the button to enter room number",false);
-                return;
-            }
-            Hosting=!Hosting;
-            if(Hosting) {
-                showLiveFlashbar("Live session started",false);
-            }
-            else
-            {
-                showFlashBar("Live session ended");
-                try {
-                    deleteLiveSession();
-                    deleteEveryNode();
-                } catch (InterruptedException e) {
-                    showErrorFlashbar(e.getMessage());
+            //Button Functons
+            liveBtn.setOnLongClickListener(v -> {
+                if (!NetworkAvailable) {
+                    showErrorFlashbar("Internet connection isn't available.");
+                    return false;
                 }
-            }
-        });
 
-        addBtn.setOnClickListener(new View.OnClickListener() {
-            @Override
-            public void onClick(View v) {
-                BaseURL= URLManager.getItemFolderUrl();
-                if (!isNetworkConnected()){
-                    showFlashBar("Internet connection isn't available.");
+                View roomView = LayoutInflater.from(this).inflate(R.layout.roomnumberalert, null);
+                android.app.AlertDialog.Builder alertDialog = new android.app.AlertDialog.Builder(this).setView(roomView);
+                EditText roomNumber = roomView.findViewById(R.id.inputRoomNumber);
+                alertDialog.setCancelable(false)
+                        .setPositiveButton("OK", (dialog, which) -> {
+                            try {
+                                if (isValidRoomNumber(roomNumber.getText().toString())) {
+                                    showLiveFlashbar("Please wait...", true);
+                                    deleteLiveSession();
+                                    deleteEveryNode();
+                                    firebaseManager.initializeRoom(roomNumber.getText().toString());
+                                    firebaseManager.setOnChangeListeners();
+                                } else {
+                                    showErrorFlashbar("Invalid Room Number. Please try something with alphabets and numbers.");
+                                }
+
+                            } catch (Exception e) {
+                                e.printStackTrace();
+                            }
+
+                        })
+                        .setNegativeButton("Cancel", (dialog, which) -> {
+                            dialog.cancel();
+                        });
+
+                //showing
+                alertDialog.create().show();
+                return true;
+            });
+
+            liveBtn.setOnClickListener(v -> {
+
+                if (!NetworkAvailable) {
+                    showErrorFlashbar("Internet connection isn't available.");
                     return;
                 }
-                if(itemRecyclerView.getVisibility()==View.GONE) {
-                    refreshItemList();
-                    arFragment.setOnTapArPlaneListener(addObjects);
-                    hideButtons();
-                    itemRecyclerView.setVisibility(View.VISIBLE);
+                if (!firebaseManager.isRoomInitialized()) {
+                    showLiveFlashbar("Long Press on the button to enter room number", false);
+                    return;
                 }
-                else
-                {
-                    itemRecyclerView.setVisibility(View.GONE);
-                    showButtons();
-                }
-            }
-        });
-        addBtn.setOnLongClickListener(v -> {
-            BaseURL=URLManager.getAnimatedItemFolderUrl();
-            if (!isNetworkConnected()){
-                showFlashBar("Internet connection isn't available.");
-            }
-            else {
-                if(itemRecyclerView.getVisibility()==View.GONE) {
-                    refreshAnimatedItemList();
-                    arFragment.setOnTapArPlaneListener(addAnimatedObjects);
-                    hideButtons();
-                    itemRecyclerView.setVisibility(View.VISIBLE);
-                }
-            }
-            return true;
-        });
+                busy = false;
+                Hosting = !Hosting;
+                if (Hosting) {
 
-
-        devToggleBtn.setOnClickListener((view)->{
-            if(!URLManager.DevChannelUrl.isEmpty()) {
-                new AlertDialog.Builder(this)
-                        .setPositiveButton("Toggle Channel", (dialog, which) -> {
-                            toggleChannelURL();
-                            dialog.dismiss();
-                        })
-                        .setNegativeButton("Reset Dev Channel URL",(dialog, which) -> {
-                            URLManager.resetDevChannelUrl();
-                            showFlashBar("Dev Channel URL has been reset");
-                            dialog.dismiss();
-                        })
-                        .setTitle("Choose an action")
-                        .setMessage("Your can either toggle between Dev and Stable channels or reset the current Dev Channel URL.")
-                        .setCancelable(true)
-                        .show();
-            }
-            else
-            {
-                View v= getLayoutInflater().inflate(R.layout.url_alert_dialog,null);
-                new AlertDialog.Builder(this)
-                        .setView(v)
-                        .setPositiveButton("OK",(dialog, which) -> {
-                            EditText editText=v.findViewById(R.id.dev_url);
-                            if(!editText.getText().toString().isEmpty()) {
-                                URLManager.DevChannelUrl = editText.getText().toString();
-                                toggleChannelURL();
-                            }
-                            else
-                            {
-                                showErrorFlashbar("Empty URL");
-                            }
-                        })
-                        .setNegativeButton("Cancel",(dialog, which) -> {dialog.dismiss();})
-                        .setCancelable(false)
-                        .show();
-            }
-        });
-
-        devToggleBtn.setOnLongClickListener(view->{
-            String url = "https://github.com/Projit32/ARStudio-Sceneform-SDK-1.16.0/tree/master/Model%20Hosting";
-            Intent i = new Intent(Intent.ACTION_VIEW);
-            i.setData(Uri.parse(url));
-            startActivity(i);
-            return true;
-        });
-
-        deleteBtn.setOnClickListener((view)->{
-            if(busy && Hosting)
-            {
-                showBusyMessage();
-                return;
-            }
-            delete=!delete;
-            if(!delete)
-            {
-                showFlashBar("Add Mode Activated");
-            }
-            else {
-                showFlashBar("Delete Mode Activated");
-            }
-        });
-
-        drawBtn.setOnClickListener((view)->{
-            draw=!draw;
-
-            if(draw) {
-                controlPanel.setVisibility(View.VISIBLE);
-                showFlashBar("Draw Mode Enabled");
-                arFragment.getArSceneView().getPlaneRenderer().setEnabled(false);
-                arFragment.setOnTapArPlaneListener(null);
-                arFragment.getArSceneView().getScene().addOnPeekTouchListener(Drawing);
-            }
-            else
-            {
-                controlPanel.setVisibility(View.GONE);
-                colorPanel.setVisibility(View.GONE);
-                showFlashBar("Draw Mode Disabled");
-                arFragment.setOnTapArPlaneListener(addObjects);
-                arFragment.getArSceneView().getPlaneRenderer().setEnabled(true);
-                arFragment.getArSceneView().getScene().removeOnPeekTouchListener(Drawing);
-                //arFragment.getArSceneView().getScene().addOnPeekTouchListener(deleteObjects);
-
-            }
-
-        });
-
-
-        Record.setOnClickListener((view) -> {
-            storagePermission=checkStoragePermission();
-            if(videoRecorder== null)
-            {
-                videoRecorder=new VideoRecorder(this);
-                videoRecorder.setSceneView(arFragment.getArSceneView());
-            }
-            if(storagePermission) {
-                int orientation= getResources().getConfiguration().orientation;
-                videoRecorder.setVideoQuality(camcorderProfile,orientation);
-                new Thread(()->{
-                    handler.post(()->{toggleRotationLock();});
-                    Recording=videoRecorder.onToggleRecord(this);
-                    if (Recording) {
-                        Record.post(()->Record.setBackground(getDrawable(R.drawable.recorderstart)));
-                    } else {
-                        Record.post(()->Record.setBackground(getDrawable(R.drawable.recorderstop)));
+                    showLiveFlashbar("Live session started", false);
+                } else {
+                    showFlashBar("Live session ended");
+                    try {
+                        deleteLiveSession();
+                        deleteEveryNode();
+                    } catch (InterruptedException e) {
+                        showErrorFlashbar(e.getMessage());
                     }
-                }).start();
-
-            }
-            else {
-                showErrorFlashbar("Storage permission isn't granted");
-            }
-
-        });
-
-        Record.setOnLongClickListener(view->{
-            View resolutionSelectorView= getLayoutInflater().inflate(R.layout.resolution_selector,null);
-            LinearLayout UHD= resolutionSelectorView.findViewById(R.id.uhd_profile),HD = resolutionSelectorView.findViewById(R.id.hd_profile),HQ=resolutionSelectorView.findViewById(R.id.hq_profile);
-            UHD.setOnClickListener(v -> {
-                camcorderProfile=CamcorderProfile.QUALITY_2160P;
-                Toast.makeText(this, "4K profile Selected", Toast.LENGTH_SHORT).show();
-            });
-            HD.setOnClickListener(v -> {
-                camcorderProfile=CamcorderProfile.QUALITY_1080P;
-                Toast.makeText(this, "1080P profile Selected", Toast.LENGTH_SHORT).show();
-            });
-            HQ.setOnClickListener(v -> {
-                camcorderProfile=CamcorderProfile.QUALITY_720P;
-                Toast.makeText(this, "720P profile Selected", Toast.LENGTH_SHORT).show();
+                }
             });
 
-            new AlertDialog.Builder(this)
-                    .setView(resolutionSelectorView)
-                    .setCancelable(true)
-                    .setNegativeButton("Cancel",(dialog, which) -> {dialog.dismiss();})
-                    .setPositiveButton("Done",(dialog, which) -> {dialog.dismiss();})
-                    .show();
-            return true;
-        });
+            addBtn.setOnClickListener(new View.OnClickListener() {
+                @Override
+                public void onClick(View v) {
+                    BaseURL = URLManager.getItemFolderUrl();
+                    if (!NetworkAvailable) {
+                        showErrorFlashbar("Internet connection isn't available.");
+                        return;
+                    }
+                    if (itemRecyclerView.getVisibility() == View.GONE) {
+                        refreshItemList();
+                        arFragment.setOnTapArPlaneListener(addObjects);
+                        hideButtons();
+                        itemRecyclerView.setVisibility(View.VISIBLE);
+                    } else {
+                        itemRecyclerView.setVisibility(View.GONE);
+                        showButtons();
+                    }
+                }
+            });
+            addBtn.setOnLongClickListener(v -> {
+                BaseURL = URLManager.getAnimatedItemFolderUrl();
+                if (!NetworkAvailable) {
+                    showErrorFlashbar("Internet connection isn't available.");
+                } else {
+                    if (itemRecyclerView.getVisibility() == View.GONE) {
+                        refreshAnimatedItemList();
+                        arFragment.setOnTapArPlaneListener(addAnimatedObjects);
+                        hideButtons();
+                        itemRecyclerView.setVisibility(View.VISIBLE);
+                    }
+                }
+                return true;
+            });
 
-        FloatingText.setOnClickListener(view->{
-            if(busy && Hosting)
-            {
-                showBusyMessage();
-                return;
-            }
-            arFragment.setOnTapArPlaneListener(addFloatingText);
-            showFlashBar("Tap on the plane to add the text.");
+
+            devToggleBtn.setOnClickListener((view) -> {
+                if (!URLManager.DevChannelUrl.isEmpty()) {
+                    new AlertDialog.Builder(this)
+                            .setPositiveButton("Toggle Channel", (dialog, which) -> {
+                                toggleChannelURL();
+                                dialog.dismiss();
+                            })
+                            .setNegativeButton("Reset Dev Channel URL", (dialog, which) -> {
+                                URLManager.resetDevChannelUrl();
+                                showFlashBar("Dev Channel URL has been reset");
+                                dialog.dismiss();
+                            })
+                            .setTitle("Choose an action")
+                            .setMessage("Your can either toggle between Dev and Stable channels or reset the current Dev Channel URL.")
+                            .setCancelable(true)
+                            .show();
+                } else {
+                    View v = getLayoutInflater().inflate(R.layout.url_alert_dialog, null);
+                    new AlertDialog.Builder(this)
+                            .setView(v)
+                            .setPositiveButton("OK", (dialog, which) -> {
+                                EditText editText = v.findViewById(R.id.dev_url);
+                                if (!editText.getText().toString().isEmpty()) {
+                                    URLManager.DevChannelUrl = editText.getText().toString();
+                                    toggleChannelURL();
+                                } else {
+                                    showErrorFlashbar("Empty URL");
+                                }
+                            })
+                            .setNegativeButton("Cancel", (dialog, which) -> {
+                                dialog.dismiss();
+                            })
+                            .setCancelable(false)
+                            .show();
+                }
+            });
+
+            devToggleBtn.setOnLongClickListener(view -> {
+                String url = "https://github.com/Projit32/ARStudio-Sceneform-SDK-1.16.0/tree/master/Model%20Hosting";
+                Intent i = new Intent(Intent.ACTION_VIEW);
+                i.setData(Uri.parse(url));
+                startActivity(i);
+                return true;
+            });
+
+            deleteBtn.setOnClickListener((view) -> {
+                if (busy && Hosting) {
+                    showBusyMessage();
+                    return;
+                }
+                delete = !delete;
+                if (!delete) {
+                    showFlashBar("Add Mode Activated");
+                } else {
+                    showFlashBar("Delete Mode Activated");
+                }
+            });
+
+            drawBtn.setOnClickListener((view) -> {
+                draw = !draw;
+
+                if (draw) {
+                    controlPanel.setVisibility(View.VISIBLE);
+                    showFlashBar("Draw Mode Enabled");
+                    arFragment.getArSceneView().getPlaneRenderer().setEnabled(false);
+                    arFragment.setOnTapArPlaneListener(null);
+                    arFragment.getArSceneView().getScene().addOnPeekTouchListener(Drawing);
+                } else {
+                    controlPanel.setVisibility(View.GONE);
+                    colorPanel.setVisibility(View.GONE);
+                    showFlashBar("Draw Mode Disabled");
+                    arFragment.setOnTapArPlaneListener(addObjects);
+                    arFragment.getArSceneView().getPlaneRenderer().setEnabled(true);
+                    arFragment.getArSceneView().getScene().removeOnPeekTouchListener(Drawing);
+                    //arFragment.getArSceneView().getScene().addOnPeekTouchListener(deleteObjects);
+
+                }
+
+            });
 
 
-        });
+            Record.setOnClickListener((view) -> {
+                storagePermission = checkStoragePermission();
+                try {
+                    if (videoRecorder == null) {
+                        videoRecorder = new VideoRecorder(this);
+                        videoRecorder.setSceneView(arFragment.getArSceneView());
+                    }
+                    if (storagePermission) {
+                        int orientation = getResources().getConfiguration().orientation;
+                        videoRecorder.setVideoQuality(camcorderProfile, orientation);
+                        new Thread(() -> {
+                            handler.post(() -> {
+                                toggleRotationLock();
+                            });
+                            Recording = videoRecorder.onToggleRecord(this);
+                            if (Recording) {
+                                Record.post(() -> Record.setBackground(getDrawable(R.drawable.recorderstart)));
+                            } else {
+                                Record.post(() -> Record.setBackground(getDrawable(R.drawable.recorderstop)));
+                            }
+                        }).start();
 
-        FloatingImage.setOnClickListener(v -> {
-            if(busy && Hosting)
-            {
-                showBusyMessage();
-                return;
-            }
-            storagePermission=checkStoragePermission();
-            if(storagePermission) {
-                Intent gallery = new Intent();
-                gallery.setType("image/*");
-                gallery.setAction(Intent.ACTION_GET_CONTENT);
-                startActivityForResult(Intent.createChooser(gallery,"Select Image"),IMAGE_CODE);
-            }
-            else {
-                showErrorFlashbar("Storage permission isn't granted");
-            }
-        });
+                    } else {
+                        showErrorFlashbar("Storage permission isn't granted");
+                    }
+                } catch (Exception e) {
+                    showErrorFlashbar(e.getMessage());
+                }
 
-        graphBtn.setOnClickListener(v -> {
-            if(busy && Hosting)
-            {
-                showBusyMessage();
-                return;
-            }
-            storagePermission=checkStoragePermission();
-            if(storagePermission) {
-                Intent exelFile = new Intent();
-                exelFile.setType("application/vnd.openxmlformats-officedocument.spreadsheetml.sheet");
-                exelFile.setAction(Intent.ACTION_GET_CONTENT);
-                startActivityForResult(Intent.createChooser(exelFile,"Select File"),EXCEL_CODE);
+            });
 
-            }
-            else {
-                showErrorFlashbar("Storage permission isn't granted");
-            }
-        });
-        setUpColorPickerUi();
+            Record.setOnLongClickListener(view -> {
+                View resolutionSelectorView = getLayoutInflater().inflate(R.layout.resolution_selector, null);
+                LinearLayout UHD = resolutionSelectorView.findViewById(R.id.uhd_profile), HD = resolutionSelectorView.findViewById(R.id.hd_profile), HQ = resolutionSelectorView.findViewById(R.id.hq_profile);
+                UHD.setOnClickListener(v -> {
+                    camcorderProfile = CamcorderProfile.QUALITY_2160P;
+                    Toast.makeText(this, "4K profile Selected", Toast.LENGTH_SHORT).show();
+                });
+                HD.setOnClickListener(v -> {
+                    camcorderProfile = CamcorderProfile.QUALITY_1080P;
+                    Toast.makeText(this, "1080P profile Selected", Toast.LENGTH_SHORT).show();
+                });
+                HQ.setOnClickListener(v -> {
+                    camcorderProfile = CamcorderProfile.QUALITY_720P;
+                    Toast.makeText(this, "720P profile Selected", Toast.LENGTH_SHORT).show();
+                });
 
-        prepareTutorial();
-        handler.postDelayed(()->{new TutorialBuilder(this).with(tutorials).buildShowCase("First_Tutorial");},1000);
+                new AlertDialog.Builder(this)
+                        .setView(resolutionSelectorView)
+                        .setCancelable(true)
+                        .setNegativeButton("Cancel", (dialog, which) -> {
+                            dialog.dismiss();
+                        })
+                        .setPositiveButton("Done", (dialog, which) -> {
+                            dialog.dismiss();
+                        })
+                        .show();
+                return true;
+            });
+
+            FloatingText.setOnClickListener(view -> {
+                if (busy && Hosting) {
+                    showBusyMessage();
+                    return;
+                }
+                arFragment.setOnTapArPlaneListener(addFloatingText);
+                showFlashBar("Tap on the plane to add the text.");
+
+
+            });
+
+            FloatingImage.setOnClickListener(v -> {
+                if (busy && Hosting) {
+                    showBusyMessage();
+                    return;
+                }
+                storagePermission = checkStoragePermission();
+                if (storagePermission) {
+                    Intent gallery = new Intent();
+                    gallery.setType("image/*");
+                    gallery.setAction(Intent.ACTION_GET_CONTENT);
+                    startActivityForResult(Intent.createChooser(gallery, "Select Image"), IMAGE_CODE);
+                } else {
+                    showErrorFlashbar("Storage permission isn't granted");
+                }
+            });
+
+            graphBtn.setOnClickListener(v -> {
+                if (busy && Hosting) {
+                    showBusyMessage();
+                    return;
+                }
+                storagePermission = checkStoragePermission();
+                if (storagePermission) {
+                    Intent exelFile = new Intent();
+                    exelFile.setType("application/vnd.openxmlformats-officedocument.spreadsheetml.sheet");
+                    exelFile.setAction(Intent.ACTION_GET_CONTENT);
+                    startActivityForResult(Intent.createChooser(exelFile, "Select File"), EXCEL_CODE);
+
+                } else {
+                    showErrorFlashbar("Storage permission isn't granted");
+                }
+            });
+            setUpColorPickerUi();
+
+            prepareTutorial();
+            handler.postDelayed(() -> {
+                new TutorialBuilder(this).with(tutorials).buildShowCase("First_Tutorial");
+            }, 1000);
+        }
+        catch(Exception e)
+        {
+            Toast.makeText(this, e.getMessage(), Toast.LENGTH_SHORT).show();
+        }
 
     }
 
@@ -589,11 +591,13 @@ public class MainActivity extends AppCompatActivity implements Scene.OnUpdateLis
      {
          Thread destroy=new Thread(()->{
              liveObjects.clear();
+             forfitPendingModelDownloads();
              firebaseManager.destroyReferences();
              firebaseManager = null;
              firebaseManager = new FirebaseManager(this);
          });
          destroy.start();
+         destroy.join();
      }
 
      // Delete every node
@@ -954,7 +958,10 @@ public class MainActivity extends AppCompatActivity implements Scene.OnUpdateLis
 
     public void refreshItemList()
     {
-        if(!isNetworkConnected()){return;}
+        if(!NetworkAvailable){
+            showErrorFlashbar("No Internet Available");
+            return;
+        }
         progressBar.setVisibility(View.VISIBLE);
         Call<ArrayList<ItemList>> call = retrofitClient.getItemListCall();
         try {
@@ -980,7 +987,10 @@ public class MainActivity extends AppCompatActivity implements Scene.OnUpdateLis
 
      public void refreshAnimatedItemList()
      {
-         if(!isNetworkConnected()){return;}
+         if(!NetworkAvailable){
+             showErrorFlashbar("No Internet Available");
+             return;
+         }
          progressBar.setVisibility(View.VISIBLE);
          Call<ArrayList<ItemList>> call=retrofitClient.getAnimatedItemListCall();
          try {
@@ -1446,6 +1456,7 @@ public class MainActivity extends AppCompatActivity implements Scene.OnUpdateLis
                  .primaryActionTapListener(bar->{
                      bar.dismiss();
                      forfitPendingModelDownloads();
+                     showFlashBar("Downloads Cancelled");
                  })
                  .build();
          handler.post(()->{flashbar.show();});
@@ -1481,17 +1492,39 @@ public class MainActivity extends AppCompatActivity implements Scene.OnUpdateLis
          }
      }
 
-     private boolean isNetworkConnected()
+     private void registerNetworkCheck()
      {
-         ConnectivityManager cm = (ConnectivityManager)getSystemService(Context.CONNECTIVITY_SERVICE);
-         NetworkInfo activeNetwork = cm.getActiveNetworkInfo();
-         boolean isConnected = activeNetwork != null &&
-                 activeNetwork.isConnectedOrConnecting();
-         if(!isConnected)
-         {
-             showErrorFlashbar("No internet connection available.");
-         }
-         return isConnected;
+         ConnectivityManager connectivityManager = (ConnectivityManager) getSystemService(Context.CONNECTIVITY_SERVICE);
+
+         NetworkRequest.Builder builder = new NetworkRequest.Builder();
+
+         connectivityManager.registerNetworkCallback(
+                 builder.build(),
+                 new ConnectivityManager.NetworkCallback() {
+                     @Override
+                     public void onAvailable(Network network) {
+                         NetworkAvailable=true;
+                     }
+                     @Override
+                     public void onLost(Network network) {
+                         NetworkAvailable=false;
+                     }
+
+                     @Override
+                     public void onUnavailable() {
+                         NetworkAvailable=false;
+                     }
+                 }
+
+         );
+
+
+     }
+
+     @Override
+     protected void onStart() {
+         super.onStart();
+         registerNetworkCheck();
      }
 
      private void toggleRotationLock()
@@ -1519,7 +1552,6 @@ public class MainActivity extends AppCompatActivity implements Scene.OnUpdateLis
          });
          modelRenderables.clear();
          animatedAodelRenderables.clear();
-         showFlashBar("Downloads Cancelled");
      }
 
      private void forfitRecording()

@@ -210,58 +210,7 @@ public class FirebaseManager {
             mainActivity.showErrorFlashbar(message);
     }
     private void showBusyLiveFlashbar(String message) { mainActivity.showLiveFlashbar(message,true); }
-
-    /*
-    public void getLiveElementQueue() throws InterruptedException {
-
-        Thread image= new Thread(()->{
-            collectionReferenceImage.get().addOnSuccessListener(queryDocumentSnapshots -> {
-                for(QueryDocumentSnapshot documentSnapshot:queryDocumentSnapshots)
-                {
-                    ImageItem item=documentSnapshot.toObject(ImageItem.class);
-                    mainActivity.liveObjects.add(new LiveObject(MainActivity.AnchorType.PICTURE,item));
-                }
-            });
-        });image.start();
-        Thread graph= new Thread(()->{
-            collectionReferenceGraph.get().addOnSuccessListener(queryDocumentSnapshots -> {
-                for(QueryDocumentSnapshot documentSnapshot:queryDocumentSnapshots)
-                {
-                    GraphItem item=documentSnapshot.toObject(GraphItem.class);
-                    mainActivity.liveObjects.add(new LiveObject(MainActivity.AnchorType.GRAPH,item));
-                }
-            });
-        });graph.start();
-        Thread text= new Thread(()->{
-            collectionReferenceText.get().addOnSuccessListener(queryDocumentSnapshots -> {
-                for(QueryDocumentSnapshot documentSnapshot:queryDocumentSnapshots)
-                {
-                    TextItem item=documentSnapshot.toObject(TextItem.class);
-                    mainActivity.liveObjects.add(new LiveObject(MainActivity.AnchorType.TEXT,item));
-                }
-            });
-
-        });text.start();
-        Thread model= new Thread(()->{
-            collectionReferenceModel.get().addOnSuccessListener(queryDocumentSnapshots -> {
-                for(QueryDocumentSnapshot documentSnapshot:queryDocumentSnapshots)
-                {
-                    ModelItem item=documentSnapshot.toObject(ModelItem.class);
-                    mainActivity.liveObjects.add(new LiveObject(MainActivity.AnchorType.MODEL,item));
-                }
-            });
-
-        });model.start();
-
-        image.join();
-        graph.join();
-        text.join();
-        model.join();
-
-    }
-
-     */
-
+    
     public void setOnChangeListeners()
     {
         ModelListener=collectionReferenceModel.addSnapshotListener(mainActivity,(queryDocumentSnapshots, e) -> {

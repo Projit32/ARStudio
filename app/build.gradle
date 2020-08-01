@@ -6,10 +6,10 @@ android {
     compileSdkVersion 30
     defaultConfig {
         applicationId "com.ProLabs.arstudyboard"
-        minSdkVersion 26
+        minSdkVersion 28
         targetSdkVersion 30
-        versionCode 22
-        versionName "5.2.2"
+        versionCode 23
+        versionName "5.2.3"
         multiDexEnabled true
         testInstrumentationRunner "androidx.test.runner.AndroidJUnitRunner"
     }

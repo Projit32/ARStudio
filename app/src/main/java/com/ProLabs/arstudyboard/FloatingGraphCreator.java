@@ -200,6 +200,9 @@ public class FloatingGraphCreator {
 
         try {
             mychart.generateChart(chartData, header);
+            Toast.makeText(mainActivity,"Double tap on the chart to save the chart in Gallery",Toast.LENGTH_LONG).show();
+            if(!ResolvedAnchor)
+                mainActivity.saveToFireBase(getChartData(),getHeader(),getLayoutId(),anchor);
         }
         catch (NumberFormatException e)
         {
@@ -208,11 +211,8 @@ public class FloatingGraphCreator {
         }
         catch (Exception e)
         {
-            mainActivity.showErrorFlashbar("Problem With graph "+ e.toString());
+            mainActivity.showErrorFlashbar("Problem With graph "+ e.getMessage());
         }
-        Toast.makeText(mainActivity,"Double tap on the chart to save the chart in Gallery",Toast.LENGTH_LONG).show();
-        if(!ResolvedAnchor)
-            mainActivity.saveToFireBase(getChartData(),getHeader(),getLayoutId(),anchor);
     }
 
 
