@@ -18,7 +18,7 @@ AR Studio: Make your world your playground, draw in the air, create live photo g
   <img  src="GIFs/interface.gif" height=450>
 </p>
 
-See the full demo of the app and the tutorial in this [link](https://youtu.be/TLXhzyL4WCE).
+See the full demo of the app and the tutorial from this [link](https://youtu.be/TLXhzyL4WCE).Also, checkout the official video on [YouTube](https://youtu.be/2YLVbWCcByY).
 
 > **Note :** Most of the 3D models shown here have been taken from [Google Poly](https://poly.google.com/) and
 > all the 2D models are created from scrath in Android Studio and are rendered in real time only.
@@ -91,4 +91,4 @@ Initial Setup:
   <img  src="GIFs/live.gif" height=450>
 </p>
 
-Also, checkout my IGTVs on [Instagram](https://www.instagram.com/projit32/) to see the full videos of AR Studio(Former name AR Study Room) [v1](https://www.instagram.com/tv/B1lucToHrFx/?utm_source=ig_web_copy_link), [v2](https://www.instagram.com/tv/B11NjZ5n58R/?utm_source=ig_web_copy_link) and the [final teaser](https://www.instagram.com/tv/B7RVQR3pnX6/?utm_source=ig_web_copy_link).
+Also, checkout the official video on [YouTube](https://youtu.be/2YLVbWCcByY).
