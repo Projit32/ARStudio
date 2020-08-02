@@ -12,7 +12,7 @@ An implementation of ARCore [Sceneform](https://developers.google.com/sceneform/
   <img  src="GIFs/features.gif" height=450>
 </p>
 
-AR Studio: Make your world your playground, draw in the air, create live photo galleries, Place notes anywhere, visualise 2D, 3D and animated models in real-time, forget projectors and theoretical explanations, analyse trends, bars and chart data, and get immersed into the world of Augmented Reality with the all-purpose Augmented Reality app with live cloud synchronisation support! This was made with simplicity in mind and has the simplest and intuitive interface to use, along with so many cool features to play with.
+AR Studio: Make your world your playground, draw in the air, create live photo galleries, Place notes anywhere, visualize 2D, 3D and animated models in real-time, forget projectors and theoretical explanations, analyze trends, bars and chart data, and get immersed into the world of Augmented Reality with the all-purpose Augmented Reality app with live cloud synchronization support! This was made with simplicity in mind and has the simplest and intuitive interface to use, along with so many cool features to play with.
 
 <p align="center">
   <img  src="GIFs/interface.gif" height=450>
