@@ -412,8 +412,7 @@ public class MainActivity extends AppCompatActivity implements Scene.OnUpdateLis
                             handler.post(() -> {
                                 toggleRotationLock();
                             });
-                            Recording = videoRecorder.onToggleRecord(this);
-                            if (Recording) {
+                            if (videoRecorder.onToggleRecord(this)) {
                                 Record.post(() -> Record.setBackground(getDrawable(R.drawable.recorderstart)));
                             } else {
                                 Record.post(() -> Record.setBackground(getDrawable(R.drawable.recorderstop)));
@@ -522,12 +521,18 @@ public class MainActivity extends AppCompatActivity implements Scene.OnUpdateLis
 
     private void toggleChannelURL()
     {
-        URLManager.toggleChannel();
-        retrofitClient = new RetrofitClient();
-        if (URLManager.isDevChannel) {
-            showFlashBar("Switched to Dev Channel");
-        } else {
-            showFlashBar("Stable Channel Activated");
+        try {
+            URLManager.toggleChannel();
+            retrofitClient = new RetrofitClient();
+            if (URLManager.isDevChannel) {
+                showFlashBar("Switched to Dev Channel");
+            } else {
+                showFlashBar("Stable Channel Activated");
+            }
+        }
+        catch(Exception e)
+        {
+            showErrorFlashbar("Error Fetching the URL : "+e.getMessage());
         }
     }
 
@@ -1553,14 +1558,6 @@ public class MainActivity extends AppCompatActivity implements Scene.OnUpdateLis
          modelRenderables.clear();
          animatedAodelRenderables.clear();
      }
-
-     private void forfitRecording()
-     {
-         if(Recording)
-         {
-             Recording=videoRecorder.onToggleRecord(this);
-         }
-     }
      
      @Override
      protected void onDestroy() {
@@ -1576,7 +1573,6 @@ public class MainActivity extends AppCompatActivity implements Scene.OnUpdateLis
              Toast.makeText(this, e.getMessage(), Toast.LENGTH_SHORT).show();
          }
          forfitPendingModelDownloads();
-         forfitRecording();
          Toast.makeText(this, "AR Studio has been closed", Toast.LENGTH_SHORT).show();
          overridePendingTransition(R.anim.fadeout,R.anim.fadein);
      }
