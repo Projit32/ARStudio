@@ -415,7 +415,10 @@ public class MainActivity extends AppCompatActivity implements Scene.OnUpdateLis
                             if (videoRecorder.onToggleRecord(this)) {
                                 Record.post(() -> Record.setBackground(getDrawable(R.drawable.recorderstart)));
                             } else {
-                                Record.post(() -> Record.setBackground(getDrawable(R.drawable.recorderstop)));
+                                Record.post(() -> {
+                                    Record.setBackground(getDrawable(R.drawable.recorderstop));
+                                    videoRecorder=null;
+                                });
                             }
                         }).start();
 
@@ -1558,7 +1561,7 @@ public class MainActivity extends AppCompatActivity implements Scene.OnUpdateLis
          modelRenderables.clear();
          animatedAodelRenderables.clear();
      }
-     
+
      @Override
      protected void onDestroy() {
          super.onDestroy();
