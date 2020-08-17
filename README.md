@@ -44,7 +44,7 @@ Initial Setup:
 **app/src/main/java/com/ProLabs/arstudyboard/Manager/URLManager.java**
 
 ```
- public static String StableChannelUrl="YOUR_DOMAIN_NAME";
+ public static String StableChannelUrl="YOUR_DOMAIN_NAME"; //Should be in the format http or https://YOUR_DOMAIN_NAME
 ```                
 
 **To setup your own 3D model hosting service follow the instructions provided over [HERE](https://github.com/Projit32/ARStudio-Sceneform-SDK-1.16.0/blob/master/Model%20Hosting/).**
