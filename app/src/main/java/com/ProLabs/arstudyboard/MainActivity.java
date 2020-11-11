@@ -576,11 +576,9 @@ public class MainActivity extends AppCompatActivity implements Scene.OnUpdateLis
                 "tap wherever you want to place the image.\n\nThese can also be twisted and resized like others"));
 
         tutorials.add(new Pair<View, String>(graphBtn,"You can add Graphs on any scanner area. All you need to have an " +
-                "Excel file with .xls or .xlsx extension from your internal storage (Except Downloads).\n\nThe excel file" +
+                "Excel file with .xls or .xlsx extension from your internal storage.\n\nThe excel file" +
                 " should have a column with all the names/labels and another with their corresponding numerical values.\n\n" +
-                "From here, the process is same as before. Select the type of chart you want and then it will ask you for " +
-                "the column numbers of the label and the values. Check the box if your Excel file has column headers and tap" +
-                " where you want to place it. These are twistable and resizeable."));
+                "Check the box if your Excel file has column headers and tap where you want to place it."));
 
         tutorials.add(new Pair<View, String>(Record,"Record anything and everything. If it's red, its recording, else it's not." +
                 "\n\nTap and hold to change resolution of recording. High resolution might cause frame drops."));
