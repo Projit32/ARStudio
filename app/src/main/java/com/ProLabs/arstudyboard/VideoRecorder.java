@@ -44,6 +44,7 @@ public class VideoRecorder {
     private int videoCodec;
     private File videoDirectory;
     private String videoBaseName;
+    private CamcorderProfile profile = null;
     private File videoPath;
     private int bitRate = DEFAULT_BITRATE;
     private int frameRate = DEFAULT_FRAMERATE;
@@ -187,10 +188,12 @@ public class VideoRecorder {
 
         mediaRecorder.setVideoSource(MediaRecorder.VideoSource.SURFACE);
         mediaRecorder.setOutputFormat(MediaRecorder.OutputFormat.MPEG_4);
+        //mediaRecorder.setAudioSource(MediaRecorder.AudioSource.MIC);
         mediaRecorder.setVideoEncodingBitRate(bitRate);
         mediaRecorder.setVideoFrameRate(frameRate);
         mediaRecorder.setVideoSize(videoSize.getWidth(), videoSize.getHeight());
         mediaRecorder.setVideoEncoder(videoCodec);
+        //mediaRecorder.setAudioEncoder(profile.audioCodec);
 
         if(videoPath==null)
         {
@@ -201,11 +204,11 @@ public class VideoRecorder {
             mediaRecorder.setOutputFile(videoPath.getAbsolutePath());
         }
 
-        mediaRecorder.prepare();
+       mediaRecorder.prepare();
 
         try {
             mediaRecorder.start();
-        } catch (IllegalStateException e) {
+        } catch (Exception e) {
             Log.e(TAG, "Exception starting capture: " + e.getMessage(), e);
         }
     }
@@ -215,7 +218,7 @@ public class VideoRecorder {
     }
 
     public void setVideoQuality(int quality , int orientation) {
-        CamcorderProfile profile = null;
+
         if (CamcorderProfile.hasProfile(quality)) {
             profile = CamcorderProfile.get(quality);
         }

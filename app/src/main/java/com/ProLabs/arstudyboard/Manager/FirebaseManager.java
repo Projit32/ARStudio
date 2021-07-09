@@ -1,9 +1,13 @@
 package com.ProLabs.arstudyboard.Manager;
 
+import android.content.ContentResolver;
 import android.net.Uri;
 import android.util.Log;
+import android.webkit.MimeTypeMap;
+import android.widget.Toast;
 
 import com.ProLabs.arstudyboard.MainActivity;
+import com.ProLabs.arstudyboard.RenderableItems.AudioItem;
 import com.ProLabs.arstudyboard.RenderableItems.GraphItem;
 import com.ProLabs.arstudyboard.RenderableItems.ImageItem;
 import com.ProLabs.arstudyboard.RenderableItems.ModelItem;
@@ -21,6 +25,7 @@ import com.google.firebase.storage.FirebaseStorage;
 import com.google.firebase.storage.StorageReference;
 import com.google.firebase.storage.UploadTask;
 
+import java.io.File;
 import java.text.DecimalFormat;
 import java.text.ParseException;
 import java.text.SimpleDateFormat;
@@ -33,10 +38,10 @@ public class FirebaseManager {
     private MainActivity mainActivity;
     private FirebaseFirestore firestoreReference;
     private DocumentReference documentReference;
-    private volatile CollectionReference collectionReferenceImage,collectionReferenceText,collectionReferenceModel,collectionReferenceGraph,temp;
+    private volatile CollectionReference collectionReferenceImage,collectionReferenceText,collectionReferenceModel,collectionReferenceGraph,temp, collectionReferenceAudio;
     private String roomNumber,number;
     private StorageReference storageReference=FirebaseStorage.getInstance().getReference();
-    private ListenerRegistration ImageListener,TextListener,ModelListener,GraphListener;
+    private ListenerRegistration ImageListener,TextListener,ModelListener,GraphListener, AudioListener;
 
     public FirebaseManager(MainActivity mainActivity) {
         this.mainActivity = mainActivity;
@@ -50,6 +55,7 @@ public class FirebaseManager {
             ImageListener.remove();
             TextListener.remove();
             GraphListener.remove();
+            AudioListener.remove();
             firestoreReference.waitForPendingWrites();
             firestoreReference.terminate();
         }
@@ -104,6 +110,7 @@ public class FirebaseManager {
         collectionReferenceText=documentReference.collection("Texts");
         collectionReferenceGraph=documentReference.collection("Graphs");
         collectionReferenceImage=documentReference.collection("Images");
+        collectionReferenceAudio=documentReference.collection("Audio");
     }
 
     public void insertModel(ModelItem modelItem)
@@ -139,7 +146,6 @@ public class FirebaseManager {
                     textItem.setdocumentID(docId);
                 });
         //setOnChangeListeners();
-
     }
 
     public void insertGraph(GraphItem graphItem)
@@ -176,13 +182,29 @@ public class FirebaseManager {
                     imageItem.setdocumentID(docId);
                 });
     }
+    public void insertAudio(AudioItem audioItem)
+    {
+        collectionReferenceAudio.add(audioItem)
+                .addOnSuccessListener(aVoid -> {
+                    showLiveFlashbar("Anchor Hosted!");
+                })
+                .addOnFailureListener(e -> {
+                    showErrorFlashbar(e.getMessage());
+                })
+                .addOnCompleteListener(task -> {
+                    String docId=task.getResult().getId();
+                    DocumentReference documentReference=collectionReferenceAudio.document(docId);
+                    documentReference.update("documentID",docId);
+                    audioItem.setdocumentID(docId);
+                });
+    }
 
     public void uploadImage(byte[] imagebytes, ImageItem imageItem)
     {
         String filename=Long.toHexString(System.currentTimeMillis()+(long)Math.random()*10000000)+".png";
         StorageReference childref=storageReference.child(roomNumber+"/"+filename);
         UploadTask uploadTask=childref.putBytes(imagebytes);
-        Task<Uri> urlTask = uploadTask.continueWithTask(task -> {
+        uploadTask.continueWithTask(task -> {
             if (!task.isSuccessful()) {
                 throw task.getException();
             }
@@ -199,6 +221,50 @@ public class FirebaseManager {
                 showErrorFlashbar("Error in image uploading");
             }
         });
+    }
+    public void uploadAudio(Uri uri, AudioItem audioItem) {
+        String filename=Long.toHexString(System.currentTimeMillis()+(long)Math.random()*10000000)+"."+getMimeType(uri);
+        StorageReference childref=storageReference.child(roomNumber+"/"+filename);
+
+        UploadTask uploadTask=childref.putFile(uri);
+
+        uploadTask.addOnProgressListener(snapshot -> {
+            Toast.makeText(mainActivity, (snapshot.getBytesTransferred()/snapshot.getTotalByteCount()*100)+"% Uploaded", Toast.LENGTH_SHORT).show();
+        }).continueWithTask(task -> {
+            if (!task.isSuccessful()) {
+                throw task.getException();
+            }
+            // Continue with the task to get the download URL
+            return childref.getDownloadUrl();
+        }).addOnCompleteListener(task -> {
+            if (task.isSuccessful()) {
+                Uri downloadUri = task.getResult();
+                audioItem.setDownloadURL(downloadUri.toString());
+                audioItem.setFileURL(roomNumber+"/"+filename);
+                insertAudio(audioItem);
+
+            } else {
+                showErrorFlashbar("Error in image uploading");
+            }
+        });
+    }
+
+    public String getMimeType(Uri uri) {
+        String extension;
+
+        //Check uri format to avoid null
+        if (uri.getScheme().equals(ContentResolver.SCHEME_CONTENT)) {
+            //If scheme is a content
+            final MimeTypeMap mime = MimeTypeMap.getSingleton();
+            extension = mime.getExtensionFromMimeType(mainActivity.getContentResolver().getType(uri));
+        } else {
+            //If scheme is a File
+            //This will replace white spaces with %20 and also other special characters. This will avoid returning null values on file name with spaces and special characters.
+            extension = MimeTypeMap.getFileExtensionFromUrl(Uri.fromFile(new File(uri.getPath())).toString());
+
+        }
+
+        return extension;
     }
 
     private void showLiveFlashbar(String message)
@@ -217,7 +283,6 @@ public class FirebaseManager {
             if (e != null) {
                 return;
             }
-
             for (DocumentChange dc : queryDocumentSnapshots.getDocumentChanges()) {
                 DocumentSnapshot documentSnapshot = dc.getDocument();
                 ModelItem item=documentSnapshot.toObject(ModelItem.class);
@@ -239,7 +304,6 @@ public class FirebaseManager {
             if (e != null) {
                 return;
             }
-
             for (DocumentChange dc : queryDocumentSnapshots.getDocumentChanges()) {
                 DocumentSnapshot documentSnapshot = dc.getDocument();
                 TextItem item=documentSnapshot.toObject(TextItem.class);
@@ -261,7 +325,6 @@ public class FirebaseManager {
             if (e != null) {
                 return;
             }
-
             for (DocumentChange dc : queryDocumentSnapshots.getDocumentChanges()) {
                 DocumentSnapshot documentSnapshot = dc.getDocument();
                 ImageItem item=documentSnapshot.toObject(ImageItem.class);
@@ -283,7 +346,6 @@ public class FirebaseManager {
             if (e != null) {
                 return;
             }
-
             for (DocumentChange dc : queryDocumentSnapshots.getDocumentChanges()) {
                 DocumentSnapshot documentSnapshot = dc.getDocument();
                 GraphItem item=documentSnapshot.toObject(GraphItem.class);
@@ -297,6 +359,30 @@ public class FirebaseManager {
                     case REMOVED:
                         if(presentNode(item.getcloudAnchorID()))
                             mainActivity.deleteLiveNodeFromScreen(item.getcloudAnchorID());
+                        break;
+                }
+            }
+        });
+        AudioListener=collectionReferenceAudio.addSnapshotListener(mainActivity, (queryDocumentSnapshots, e)->{
+            if (e != null) {
+               return;
+            }
+            for (DocumentChange dc : queryDocumentSnapshots.getDocumentChanges()) {
+                DocumentSnapshot documentSnapshot = dc.getDocument();
+                AudioItem item=documentSnapshot.toObject(AudioItem.class);
+
+                switch (dc.getType()) {
+                    case ADDED:
+                        LiveObject obj=new LiveObject(MainActivity.AnchorType.AUDIO,item);
+                        if(!presentNode(item.getcloudAnchorID()) && dc.getOldIndex()==-1)
+                            mainActivity.liveObjects.add(obj);
+                        break;
+                    case REMOVED:
+                        //TODO : check release audio for deleted node
+                        if(presentNode(item.getcloudAnchorID())) {
+                            mainActivity.deleteAudioById(item.cloudAnchorID);
+                            mainActivity.deleteLiveNodeFromScreen(item.getcloudAnchorID());
+                        }
                         break;
                 }
             }
@@ -320,6 +406,9 @@ public class FirebaseManager {
             case GRAPH:
                 temp=collectionReferenceGraph;
                 break;
+            case AUDIO:
+                temp=collectionReferenceAudio;
+                break;
         }
 
         temp.whereEqualTo("cloudAnchorID",anchorID).get().addOnSuccessListener(queryDocumentSnapshots -> { for (DocumentSnapshot document : queryDocumentSnapshots) {
@@ -328,9 +417,14 @@ public class FirebaseManager {
                 StorageReference childref=storageReference.child(document.toObject(ImageItem.class).getFileURL());
                 childref.delete();
             }
+            else if(type== MainActivity.AnchorType.AUDIO)
+            {
+                StorageReference childref=storageReference.child(document.toObject(AudioItem.class).getFileURL());
+                childref.delete();
+            }
             temp.document(document.getId()).delete();}});
 
-        /**/
+
     }
 
     private boolean presentNode(String cloudAnchorID)
@@ -380,12 +474,21 @@ public class FirebaseManager {
 
             });
             model.start();
+            Thread audio = new Thread(()->{
+                collectionReferenceAudio.get().addOnSuccessListener(queryDocumentSnapshots -> {
+                    for (QueryDocumentSnapshot documentSnapshot : queryDocumentSnapshots) {
+                        AudioItem item = documentSnapshot.toObject(AudioItem.class);
+                        deleteAnchor(item.cloudAnchorID, MainActivity.AnchorType.MODEL);
+                    }
+                });
+            });
+            audio.start();
 
             image.join();
             graph.join();
             text.join();
             model.join();
-
+            audio.join();
 
             documentReference.delete().addOnSuccessListener(aVoid -> {
                 showBusyLiveFlashbar("Previous session of this room has expired. Creating a new session");
@@ -394,6 +497,7 @@ public class FirebaseManager {
                     initializeRoom(number);
                 } catch (Exception e) {
                     e.printStackTrace();
+                    showErrorFlashbar("Error Creating Room : "+e.getMessage());
                 }
             });
         }
@@ -409,6 +513,7 @@ public class FirebaseManager {
         long diff=now.getTime()-room.getTime();
         return (double)diff/3600000;
     }
+
 
 
 }

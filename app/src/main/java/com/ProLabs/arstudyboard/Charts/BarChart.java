@@ -97,6 +97,7 @@ public class BarChart extends ChartsUtil
         //Listeners
         barChart.setOnChartGestureListener(this);
         barChart.setOnChartValueSelectedListener(this);
+
     }
 
 

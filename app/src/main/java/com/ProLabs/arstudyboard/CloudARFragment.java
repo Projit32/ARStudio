@@ -1,10 +1,18 @@
 package com.ProLabs.arstudyboard;
 
+import android.os.Bundle;
+import android.view.View;
+
+import androidx.annotation.NonNull;
+import androidx.annotation.Nullable;
+
 import com.google.ar.core.CameraConfig;
 import com.google.ar.core.CameraConfigFilter;
 import com.google.ar.core.Config;
 import com.google.ar.core.Session;
 import com.google.ar.sceneform.ux.ArFragment;
+
+import org.jetbrains.annotations.NotNull;
 
 import java.util.EnumSet;
 import java.util.List;
@@ -26,6 +34,10 @@ public class CloudARFragment extends ArFragment {
         session.setCameraConfig(cameraConfigList.get(0));
         Config config = session.getConfig();
 
+        if (session.isDepthModeSupported(Config.DepthMode.AUTOMATIC)) {
+            config.setDepthMode(Config.DepthMode.AUTOMATIC);
+        }
+        config.setUpdateMode(Config.UpdateMode.LATEST_CAMERA_IMAGE);
 
         config.setCloudAnchorMode(Config.CloudAnchorMode.ENABLED);
         config.setFocusMode(Config.FocusMode.AUTO);
@@ -33,4 +45,7 @@ public class CloudARFragment extends ArFragment {
         this.getArSceneView().setupSession(session);
         return config;
     }
+
+
+
 }

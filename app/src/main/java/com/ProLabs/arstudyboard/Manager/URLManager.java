@@ -24,9 +24,11 @@ public class URLManager {
         return BaseUrl+"/ARSR/AnimatedObjects/";
     }
 
+    public static void clearDevChannelURL() { DevChannelUrl=StableChannelUrl; }
+
     public static void resetDevChannelUrl()
     {
-        DevChannelUrl="";
+        DevChannelUrl=StableChannelUrl;
     }
 
 

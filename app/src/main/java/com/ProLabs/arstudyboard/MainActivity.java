@@ -2,6 +2,7 @@ package com.ProLabs.arstudyboard;
 
 
 import android.Manifest;
+import android.app.Activity;
 import android.content.Context;
 import android.content.Intent;
 import android.content.pm.ActivityInfo;
@@ -28,6 +29,7 @@ import android.widget.LinearLayout;
 import android.widget.ProgressBar;
 import android.widget.Toast;
 
+import androidx.activity.result.ActivityResult;
 import androidx.annotation.NonNull;
 import androidx.annotation.Nullable;
 import androidx.appcompat.app.AlertDialog;
@@ -37,10 +39,16 @@ import androidx.core.content.ContextCompat;
 import androidx.recyclerview.widget.LinearLayoutManager;
 import androidx.recyclerview.widget.RecyclerView;
 
+import com.ProLabs.arstudyboard.Creators.FloatingAudioCreator;
+import com.ProLabs.arstudyboard.Creators.FloatingGraphCreator;
+import com.ProLabs.arstudyboard.Creators.FloatingImageCreator;
+import com.ProLabs.arstudyboard.Creators.FloatingTextCreator;
 import com.ProLabs.arstudyboard.Drawing.Stroke;
+import com.ProLabs.arstudyboard.Manager.ActivityResultManager;
 import com.ProLabs.arstudyboard.Manager.AnimationManager;
 import com.ProLabs.arstudyboard.Manager.FirebaseManager;
 import com.ProLabs.arstudyboard.Manager.URLManager;
+import com.ProLabs.arstudyboard.RenderableItems.AudioItem;
 import com.ProLabs.arstudyboard.RenderableItems.GraphItem;
 import com.ProLabs.arstudyboard.RenderableItems.ImageItem;
 import com.ProLabs.arstudyboard.RenderableItems.ModelItem;
@@ -51,6 +59,7 @@ import com.ProLabs.arstudyboard.Utility.LiveObject;
 import com.ProLabs.arstudyboard.Utility.RetrofitClient;
 import com.ProLabs.arstudyboard.Utility.TutorialBuilder;
 import com.andrognito.flashbar.Flashbar;
+import com.google.android.filament.ColorGrading;
 import com.google.android.material.floatingactionbutton.FloatingActionButton;
 import com.google.ar.core.Anchor;
 import com.google.ar.core.Pose;
@@ -61,13 +70,18 @@ import com.google.ar.sceneform.Camera;
 import com.google.ar.sceneform.FrameTime;
 import com.google.ar.sceneform.HitTestResult;
 import com.google.ar.sceneform.Scene;
+import com.google.ar.sceneform.SceneView;
 import com.google.ar.sceneform.collision.Ray;
 import com.google.ar.sceneform.math.Vector3;
+import com.google.ar.sceneform.rendering.CameraStream;
 import com.google.ar.sceneform.rendering.Color;
+import com.google.ar.sceneform.rendering.EngineInstance;
 import com.google.ar.sceneform.rendering.Material;
 import com.google.ar.sceneform.rendering.MaterialFactory;
 import com.google.ar.sceneform.rendering.ModelRenderable;
+import com.google.ar.sceneform.rendering.Renderer;
 import com.google.ar.sceneform.rendering.Texture;
+import com.google.ar.sceneform.ux.ArFragment;
 import com.google.ar.sceneform.ux.BaseArFragment;
 import com.google.ar.sceneform.ux.TransformableNode;
 
@@ -89,7 +103,7 @@ public class MainActivity extends AppCompatActivity implements Scene.OnUpdateLis
  {
 
     private static final String TAG = MainActivity.class.getSimpleName();
-    private static final int IMAGE_CODE=1,EXCEL_CODE=3;
+    private static final int IMAGE_CODE=1,EXCEL_CODE=3,AUDIO_CODE=2;
     private static final float DRAW_DISTANCE = 0.13f;
     private static final Color WHITE = new Color(android.graphics.Color.WHITE);
     private static final Color RED = new Color(android.graphics.Color.RED);
@@ -98,6 +112,7 @@ public class MainActivity extends AppCompatActivity implements Scene.OnUpdateLis
     private static final Color BLACK = new Color(android.graphics.Color.BLACK);
     private volatile Bitmap image;
     private volatile ArrayList<ArrayList<String>> ExcelData= new ArrayList<>();
+    private volatile Uri AudioUri;
     private AnchorNode anchorNode;
     private final ArrayList<Stroke> strokes = new ArrayList<>();
     private Material material;
@@ -109,15 +124,16 @@ public class MainActivity extends AppCompatActivity implements Scene.OnUpdateLis
     FloatingActionButton addBtn,devToggleBtn,drawBtn,deleteBtn,helpBtn;
     String Asset="";
     RecyclerView itemRecyclerView;
-    public Boolean delete=false, storagePermission=false,busy=false;
+    public Boolean delete=false, storagePermission=false,busy=false, micPermission=false;
     volatile Boolean draw =false,ResolvedAnchor=false;
     LinearLayout colorPanel;
     LinearLayout controlPanel;
-    ImageButton Record,FloatingText,FloatingImage,graphBtn;
+    ImageButton Record,FloatingText,FloatingImage,graphBtn,FloatingAudio;
     private FloatingImageCreator floatingImageCreator;
     private FloatingTextCreator floatingTextCreator;
     private FloatingGraphCreator floatingGraphCreator;
-    Boolean Hosting=false,Recording=false;
+    private FloatingAudioCreator floatingAudioCreator;
+    Boolean Hosting=false;
     public HashMap<String,AnchorNode> placedNode = new HashMap<>();
     private ArrayList<AnchorNode> nodeBook= new ArrayList<>();
     private FirebaseManager firebaseManager = new FirebaseManager(this);
@@ -126,10 +142,12 @@ public class MainActivity extends AppCompatActivity implements Scene.OnUpdateLis
     private Button liveBtn;
     volatile Flashbar flashbar=null;
     ArrayList<Pair<View,String>> tutorials;
-    ArrayList<AnimationManager> animationManagers= new ArrayList<>();
+    //ArrayList<AnimationManager> animationManagers= new ArrayList<>();
     ProgressBar progressBar;
     Handler handler = new Handler();
     public static Boolean NetworkAvailable=true;
+    public ExcelFileProcessor excelFileProcessor;
+    protected final ActivityResultManager<Intent, ActivityResult> activityLauncher= ActivityResultManager.registerActivityForResult(this);
 
     // Anchor enum
      public enum AnchorType{
@@ -138,6 +156,7 @@ public class MainActivity extends AppCompatActivity implements Scene.OnUpdateLis
         GRAPH,
         PICTURE,
         TEXT,
+        AUDIO,
         NONE
     }
 
@@ -162,15 +181,19 @@ public class MainActivity extends AppCompatActivity implements Scene.OnUpdateLis
         FloatingText=findViewById(R.id.FloatingText);
         FloatingImage=findViewById(R.id.FloatingImage);
         graphBtn= findViewById(R.id.statBtn);
+        FloatingAudio = findViewById(R.id.FloatingAudio);
         floatingImageCreator= new FloatingImageCreator(this);
         floatingTextCreator= new FloatingTextCreator(this);
         floatingGraphCreator = new FloatingGraphCreator(this);
+        floatingAudioCreator = new FloatingAudioCreator(this);
         liveBtn=findViewById(R.id.test);
         helpBtn=findViewById(R.id.helpBtn);
         progressBar=findViewById(R.id.progressBar);
 
         handler.postDelayed(()->{showFlashBar("Press the + button to add objects to the screen");},550);
+        URLManager.resetDevChannelUrl();
 
+        checkAllPermissions();
         //AR Fragment
         try {
 
@@ -179,6 +202,7 @@ public class MainActivity extends AppCompatActivity implements Scene.OnUpdateLis
 
             arFragment.setOnTapArPlaneListener(addObjects);
             arFragment.getArSceneView().getScene().addOnUpdateListener(this);
+            arFragment.setOnViewCreatedListener(onViewCreatedListener);
 
             //Drawing Part
             MaterialFactory.makeOpaqueWithColor(this, WHITE)
@@ -282,23 +306,20 @@ public class MainActivity extends AppCompatActivity implements Scene.OnUpdateLis
                 }
             });
 
-            addBtn.setOnClickListener(new View.OnClickListener() {
-                @Override
-                public void onClick(View v) {
-                    BaseURL = URLManager.getItemFolderUrl();
-                    if (!NetworkAvailable) {
-                        showErrorFlashbar("Internet connection isn't available.");
-                        return;
-                    }
-                    if (itemRecyclerView.getVisibility() == View.GONE) {
-                        refreshItemList();
-                        arFragment.setOnTapArPlaneListener(addObjects);
-                        hideButtons();
-                        itemRecyclerView.setVisibility(View.VISIBLE);
-                    } else {
-                        itemRecyclerView.setVisibility(View.GONE);
-                        showButtons();
-                    }
+            addBtn.setOnClickListener(v -> {
+                BaseURL = URLManager.getItemFolderUrl();
+                if (!NetworkAvailable) {
+                    showErrorFlashbar("Internet connection isn't available.");
+                    return;
+                }
+                if (itemRecyclerView.getVisibility() == View.GONE) {
+                    refreshItemList();
+                    arFragment.setOnTapArPlaneListener(addObjects);
+                    hideButtons();
+                    itemRecyclerView.setVisibility(View.VISIBLE);
+                } else {
+                    itemRecyclerView.setVisibility(View.GONE);
+                    showButtons();
                 }
             });
             addBtn.setOnLongClickListener(v -> {
@@ -325,7 +346,7 @@ public class MainActivity extends AppCompatActivity implements Scene.OnUpdateLis
                                 dialog.dismiss();
                             })
                             .setNegativeButton("Reset Dev Channel URL", (dialog, which) -> {
-                                URLManager.resetDevChannelUrl();
+                                URLManager.clearDevChannelURL();
                                 showFlashBar("Dev Channel URL has been reset");
                                 dialog.dismiss();
                             })
@@ -409,9 +430,7 @@ public class MainActivity extends AppCompatActivity implements Scene.OnUpdateLis
                         int orientation = getResources().getConfiguration().orientation;
                         videoRecorder.setVideoQuality(camcorderProfile, orientation);
                         new Thread(() -> {
-                            handler.post(() -> {
-                                toggleRotationLock();
-                            });
+                            handler.post(this::toggleRotationLock);
                             if (videoRecorder.onToggleRecord(this)) {
                                 Record.post(() -> Record.setBackground(getDrawable(R.drawable.recorderstart)));
                             } else {
@@ -423,7 +442,7 @@ public class MainActivity extends AppCompatActivity implements Scene.OnUpdateLis
                         }).start();
 
                     } else {
-                        showErrorFlashbar("Storage permission isn't granted");
+                        showErrorFlashbar("Storage/microphone permission isn't granted");
                     }
                 } catch (Exception e) {
                     showErrorFlashbar(e.getMessage());
@@ -481,7 +500,59 @@ public class MainActivity extends AppCompatActivity implements Scene.OnUpdateLis
                     Intent gallery = new Intent();
                     gallery.setType("image/*");
                     gallery.setAction(Intent.ACTION_GET_CONTENT);
-                    startActivityForResult(Intent.createChooser(gallery, "Select Image"), IMAGE_CODE);
+                    activityLauncher.launch(gallery, result -> {
+                        if(result.getResultCode() == Activity.RESULT_OK)
+                        {
+                            try {
+                                image= MediaStore.Images.Media.getBitmap(getContentResolver(),result.getData().getData());
+                                showFlashBar("Tap on the plane to add the image.");
+                                arFragment.setOnTapArPlaneListener(addFloatingImage);
+
+                            } catch (IOException e) {
+                                showErrorFlashbar(e.getMessage());
+                            }
+                        }
+                        else
+                        {
+                            showErrorFlashbar("Error fetching File");
+                        }
+                    });
+                } else {
+                    showErrorFlashbar("Storage permission isn't granted");
+                }
+            });
+
+            FloatingAudio.setOnClickListener(v->{
+                if (busy && Hosting) {
+                    showBusyMessage();
+                    return;
+                }
+                storagePermission = checkStoragePermission();
+                micPermission = checkMicPermission();
+                if (storagePermission && micPermission) {
+                    Intent gallery = new Intent();
+                    gallery.setType("audio/*");
+                    gallery.setAction(Intent.ACTION_GET_CONTENT);
+                    activityLauncher.launch(gallery, result -> {
+                        if(result.getResultCode() == Activity.RESULT_OK)
+                        {
+                            try {
+                                AudioUri = result.getData().getData();
+                                //showFlashBar(VideoUri);
+                                showFlashBar("Tap on a surface to add the audio player.");
+                                arFragment.setOnTapArPlaneListener(addAddFloatingAudio);
+
+                            }
+                            catch (Exception e)
+                            {
+                                showErrorFlashbar(e.toString());
+                            }
+                        }
+                        else
+                        {
+                            showErrorFlashbar("Error fetching File");
+                        }
+                    });
                 } else {
                     showErrorFlashbar("Storage permission isn't granted");
                 }
@@ -497,7 +568,31 @@ public class MainActivity extends AppCompatActivity implements Scene.OnUpdateLis
                     Intent exelFile = new Intent();
                     exelFile.setType("application/vnd.openxmlformats-officedocument.spreadsheetml.sheet");
                     exelFile.setAction(Intent.ACTION_GET_CONTENT);
-                    startActivityForResult(Intent.createChooser(exelFile, "Select File"), EXCEL_CODE);
+                    activityLauncher.launch(exelFile, result -> {
+                        if(result.getResultCode() == Activity.RESULT_OK)
+                        {
+                            try {
+                                Thread readExcel= new Thread(()->{
+                                    excelFileProcessor= new ExcelFileProcessor(result.getData().getData(), this);
+                                    excelFileProcessor.readExcelFileFromAssets();
+                                    ExcelData.clear();
+                                    ExcelData = excelFileProcessor.getExelData();
+                                });
+                                readExcel.start();
+                                readExcel.join();
+                                showFlashBar("Tap on a surface to place a graph.");
+                                arFragment.setOnTapArPlaneListener(addFloatingGraph);
+                            }
+                            catch (Exception e)
+                            {
+                                showErrorFlashbar(e.getMessage());
+                            }
+                        }
+                        else
+                        {
+                            showErrorFlashbar("Error fetching File");
+                        }
+                    });
 
                 } else {
                     showErrorFlashbar("Storage permission isn't granted");
@@ -539,6 +634,13 @@ public class MainActivity extends AppCompatActivity implements Scene.OnUpdateLis
         }
     }
 
+    private void checkAllPermissions()
+    {
+        if (!micPermission)
+            checkMicPermission();
+        if (!storagePermission)
+            checkStoragePermission();
+    }
 
     private void prepareTutorial()
     {
@@ -601,6 +703,7 @@ public class MainActivity extends AppCompatActivity implements Scene.OnUpdateLis
              firebaseManager.destroyReferences();
              firebaseManager = null;
              firebaseManager = new FirebaseManager(this);
+             floatingAudioCreator.release();
          });
          destroy.start();
          destroy.join();
@@ -612,6 +715,7 @@ public class MainActivity extends AppCompatActivity implements Scene.OnUpdateLis
      {
          nodeBook.forEach(offlineNode -> arFragment.getArSceneView().getScene().removeChild(offlineNode));
          placedNode.clear();
+         floatingAudioCreator.release();
      }
 
      private void showBusyMessage()
@@ -619,10 +723,29 @@ public class MainActivity extends AppCompatActivity implements Scene.OnUpdateLis
         showErrorFlashbar("An Anchor is being Hosted, Please Wait...");
     }
 
-    //
+    //Interface
+     ArFragment.OnViewCreatedListener onViewCreatedListener = (fragment,arSceneView)->{
+        // Currently, the tone-mapping should be changed to FILMIC
+        // because with other tone-mapping operators except LINEAR
+        // the inverseTonemapSRGB function in the materials can produce incorrect results.
+        // The LINEAR tone-mapping cannot be used together with the inverseTonemapSRGB function.
+        Renderer renderer = arSceneView.getRenderer();
+
+        if (renderer != null) {
+            renderer.getFilamentView().setColorGrading(
+                    new ColorGrading.Builder()
+                            .toneMapping(ColorGrading.ToneMapping.FILMIC)
+                            .build(EngineInstance.getEngine().getFilamentEngine())
+            );
+        }
+        arSceneView.getCameraStream()
+                .setDepthOcclusionMode(CameraStream.DepthOcclusionMode
+                        .DEPTH_OCCLUSION_ENABLED);
+
+    };
 
     //Ar Scene Tap Listener
-     BaseArFragment.OnTapArPlaneListener addObjects= (hitResult,plane,motionEvent)->{
+     public BaseArFragment.OnTapArPlaneListener addObjects= (hitResult,plane,motionEvent)->{
         ResolvedAnchor=false;
         if(busy && Hosting)
         {
@@ -759,6 +882,32 @@ public class MainActivity extends AppCompatActivity implements Scene.OnUpdateLis
          }
      };
 
+     BaseArFragment.OnTapArPlaneListener addAddFloatingAudio=(hitResult,plane,motionEvent)->{
+         Anchor anchor=hitResult.createAnchor();
+         if(busy && Hosting)
+         {
+             showBusyMessage();
+             return;
+         }
+         if (!delete) {
+             if (Hosting) {
+                 anchor = arFragment.getArSceneView().getSession().hostCloudAnchor(hitResult.createAnchor());
+                 cloudanchor(anchor);
+                 appAnchorState = AppAnchorState.HOSTING;
+                 RenderableItemType = AnchorType.AUDIO;
+                 showLiveFlashbar("Hosting Anchor.. Please wait till the anchor is hosted.", true);
+                 return;
+             }
+             else
+                 floatingAudioCreator.build(anchor,AudioUri);
+             arFragment.setOnTapArPlaneListener(addObjects);
+         }
+         else
+         {
+             showFlashBar("Delete Mode is on, please turn that off!");
+         }
+     };
+
     Scene.OnPeekTouchListener Drawing = (hitTestResult, tap) -> {
 
         int action = tap.getAction();
@@ -803,6 +952,7 @@ public class MainActivity extends AppCompatActivity implements Scene.OnUpdateLis
                         Uri.parse(Asset)
                 )
                 .setIsFilamentGltf(true)
+                .setAsyncLoadEnabled(true)
                 .setRegistryId(Asset)
                 .build();
         modelRenderables.add(new Pair<>(model,anchor));
@@ -817,6 +967,7 @@ public class MainActivity extends AppCompatActivity implements Scene.OnUpdateLis
                          Uri.parse(Asset)
                  )
                  .setIsFilamentGltf(true)
+                 .setAsyncLoadEnabled(true)
                  .setRegistryId(Asset)
                  .build();
          animatedAodelRenderables.add(new Pair<>(model,anchor));
@@ -928,16 +1079,18 @@ public class MainActivity extends AppCompatActivity implements Scene.OnUpdateLis
          addNodeToMap(anchor.getCloudAnchorId(),anchorNode);
          TransformableNode transformableNode = new TransformableNode(arFragment.getTransformationSystem());
          transformableNode.setParent(anchorNode);
-         transformableNode.setRenderable(modelRenderable);
+         transformableNode.setRenderable(modelRenderable).animate(true).start();
          arFragment.getArSceneView().getScene().addChild(anchorNode);
          transformableNode.select();
-         AnimationManager animationManager= new AnimationManager(transformableNode);
-         animationManager.buildFilamentAnimation();
-         animationManagers.add(animationManager);
+
+
+         //AnimationManager animationManager= new AnimationManager(transformableNode);
+         //animationManager.buildFilamentAnimation();
+         //animationManagers.add(animationManager);
          transformableNode.setOnTapListener((HitTestResult hitTestResult, MotionEvent Event) ->
          {
              if(delete) {
-                 animationManagers.remove(animationManager);
+                 //animationManagers.remove(animationManager);
                  deleteNodeFromScreen(anchorNode,anchor.getCloudAnchorId(),AnchorType.MODEL);
              }
 
@@ -1028,6 +1181,7 @@ public class MainActivity extends AppCompatActivity implements Scene.OnUpdateLis
         FloatingText.setVisibility(View.GONE);
         FloatingImage.setVisibility(View.GONE);
         liveBtn.setVisibility(View.GONE);
+        FloatingAudio.setVisibility(View.GONE);
         deleteBtn.hide();
         drawBtn.hide();
         devToggleBtn.hide();
@@ -1041,6 +1195,7 @@ public class MainActivity extends AppCompatActivity implements Scene.OnUpdateLis
         FloatingText.setVisibility(View.VISIBLE);
         FloatingImage.setVisibility(View.VISIBLE);
         liveBtn.setVisibility(View.VISIBLE);
+        FloatingAudio.setVisibility(View.VISIBLE);
         deleteBtn.show();
         drawBtn.show();
         devToggleBtn.show();
@@ -1140,14 +1295,14 @@ public class MainActivity extends AppCompatActivity implements Scene.OnUpdateLis
 
     private void animateAvailableAnimatedModels()
     {
-        animationManagers.forEach(AnimationManager::animateModel);
+        //animationManagers.forEach(AnimationManager::animateModel);
     }
 
     @Override
     public void onUpdate(FrameTime frameTime) {
         checkQueue();
         checkUpdateAnchor();
-        animateAvailableAnimatedModels();
+        //animateAvailableAnimatedModels();
         checkModelDownloadStatus();
         checkAnimatedDownloadstatus();
     }
@@ -1158,6 +1313,8 @@ public class MainActivity extends AppCompatActivity implements Scene.OnUpdateLis
      TextItem textItem;
      GraphItem graphItem;
      ModelItem modelItem;
+     AudioItem audioItem;
+
      private synchronized void checkQueue() {
         if(Hosting && !liveObjects.isEmpty())
         {
@@ -1183,6 +1340,10 @@ public class MainActivity extends AppCompatActivity implements Scene.OnUpdateLis
                         modelItem=(ModelItem)object;
                         Asset=modelItem.getAssetURL();
                         resolveAnchor(modelItem.getcloudAnchorID());
+                        break;
+                    case AUDIO:
+                        audioItem=(AudioItem)object;
+                        resolveAnchor(audioItem.getcloudAnchorID());
                         break;
                 }
             }
@@ -1221,49 +1382,17 @@ public class MainActivity extends AppCompatActivity implements Scene.OnUpdateLis
          return ActivityCompat.checkSelfPermission(this, Manifest.permission.WRITE_EXTERNAL_STORAGE)== PackageManager.PERMISSION_GRANTED;
      }
 
-     //File Reading
-     ExcelFileProcessor excelFileProcessor;
-     @Override
-     protected void onActivityResult(int requestCode, int resultCode, @Nullable Intent data) {
-         super.onActivityResult(requestCode, resultCode, data);
-
-         if(requestCode== IMAGE_CODE && resultCode==RESULT_OK)
+     public  boolean checkMicPermission()
+     {
+         if(ActivityCompat.checkSelfPermission(this, Manifest.permission.RECORD_AUDIO)!= PackageManager.PERMISSION_GRANTED)
          {
-             try {
-                 image= MediaStore.Images.Media.getBitmap(getContentResolver(),data.getData());
-                 showFlashBar("Tap on the plane to add the image.");
-                 arFragment.setOnTapArPlaneListener(addFloatingImage);
-
-             } catch (IOException e) {
-                 showErrorFlashbar(e.getMessage());
-             }
-
+             ActivityCompat.requestPermissions(this, new  String[]{Manifest.permission.RECORD_AUDIO},2);
          }
 
-         else if(requestCode==EXCEL_CODE && resultCode==RESULT_OK)
-         {
-             try {
-                 Thread readExcel= new Thread(()->{
-                     excelFileProcessor= new ExcelFileProcessor(data.getData(), this);
-                     excelFileProcessor.readExcelFileFromAssets();
-                     ExcelData.clear();
-                     ExcelData = excelFileProcessor.getExelData();
-                 });
-                 readExcel.start();
-                 readExcel.join();
-                 showFlashBar("Tap on a surface to place a graph.");
-                 arFragment.setOnTapArPlaneListener(addFloatingGraph);
-             }
-             catch (Exception e)
-             {
-                 showErrorFlashbar(e.getMessage());
-             }
-         }
-         else {
-             showErrorFlashbar("Error fetching File");
-         }
-
+         return ActivityCompat.checkSelfPermission(this, Manifest.permission.RECORD_AUDIO)== PackageManager.PERMISSION_GRANTED;
      }
+
+
 
      //Cloud Anchor Methods
      private Anchor cloudAnchor=null;
@@ -1309,6 +1438,8 @@ public class MainActivity extends AppCompatActivity implements Scene.OnUpdateLis
                      case ANIMATED:
                          placeAnimatedModel(cloudAnchor);
                          break;
+                     case AUDIO:
+                         floatingAudioCreator.build(cloudAnchor,AudioUri);
                  }
                  arFragment.setOnTapArPlaneListener(addObjects);
                  RenderableItemType=AnchorType.NONE;
@@ -1340,6 +1471,9 @@ public class MainActivity extends AppCompatActivity implements Scene.OnUpdateLis
                              placeModel(cloudAnchor);
                          else
                              placeAnimatedModel(cloudAnchor);
+                         break;
+                     case AUDIO:
+                         floatingAudioCreator.buildFromAudioItem(audioItem,cloudAnchor);
                          break;
                  }
                  RenderableItemType=AnchorType.NONE;
@@ -1376,14 +1510,22 @@ public class MainActivity extends AppCompatActivity implements Scene.OnUpdateLis
              new Thread(()->{
                  firebaseManager.uploadImage(image,new ImageItem(cloudAnchor,cloudAnchor.getCloudAnchorId(),"",""));}).start();
      }
+     public void saveToFireBase(Uri uri, Anchor cloudAnchor)
+     {
+         if (Hosting)
+             new Thread(()->{
+                firebaseManager.uploadAudio(uri, new AudioItem(cloudAnchor, cloudAnchor.getCloudAnchorId(), "", ""));
+             }).start();
+
+     }
 
      //Delete Live Nodes by their IDs
 
      public void deleteLiveNodeFromScreen(String anchorID)
      {
          try {
-
              placedNode.get(anchorID).getAnchor().detach();
+             nodeBook.remove(placedNode.get(anchorID));
              placedNode.remove(anchorID);
          }
          catch (Exception e)
@@ -1397,6 +1539,11 @@ public class MainActivity extends AppCompatActivity implements Scene.OnUpdateLis
      {
          if(!anchorID.equals(""))
             new Thread(()-> firebaseManager.deleteAnchor(anchorID,type)).start();
+     }
+
+     public void deleteAudioById(String id)
+     {
+         floatingAudioCreator.deleteAudioById(id);
      }
 
 
@@ -1563,7 +1710,7 @@ public class MainActivity extends AppCompatActivity implements Scene.OnUpdateLis
      @Override
      protected void onDestroy() {
          super.onDestroy();
-         URLManager.resetDevChannelUrl();
+         floatingAudioCreator.release();
          try {
              if(Hosting)
              {
@@ -1578,18 +1725,27 @@ public class MainActivity extends AppCompatActivity implements Scene.OnUpdateLis
          overridePendingTransition(R.anim.fadeout,R.anim.fadein);
      }
 
+     @Override
+     protected void onStop() {
+         super.onStop();
+         floatingAudioCreator.release();
+     }
 
      @Override
      public void onRequestPermissionsResult(int requestCode, @NonNull String[] permissions, @NonNull int[] grantResults) {
-         if (requestCode==1)
-         {
-             if (grantResults.length>0 && grantResults[0]==PackageManager.PERMISSION_GRANTED)
-             {
+         super.onRequestPermissionsResult(requestCode, permissions, grantResults);
+         if (requestCode == 1) {
+             if (grantResults.length > 0 && grantResults[0] == PackageManager.PERMISSION_GRANTED) {
                  showFlashBar("Storage permission granted, click the button again.");
-             }
-             else
-             {
+             } else {
                  showErrorFlashbar("Storage access permission wasn't granted");
+             }
+         }
+         if (requestCode == 2) {
+             if (grantResults.length > 0 && grantResults[0] == PackageManager.PERMISSION_GRANTED) {
+                 showFlashBar("Microphone permission granted, click the button again.");
+             } else {
+                 showErrorFlashbar("Microphone access permission wasn't granted");
              }
          }
      }

@@ -200,9 +200,9 @@
         android:layout_height="65dp"
         android:layout_alignBottom="@+id/arFragment"
         android:layout_centerHorizontal="true"
+        android:scaleType="centerInside"
         android:layout_marginBottom="50dp"
         android:background="@drawable/recorderstop"
-        android:scaleType="centerInside"
         android:src="@android:drawable/ic_menu_camera"
         android:textColor="#ffff" />
 
@@ -242,6 +242,19 @@
         android:layout_marginStart="40pt"
         android:layout_marginBottom="10dp"
         android:text="Button" />
+
+
+    <ImageButton
+        android:id="@+id/FloatingAudio"
+        android:layout_width="50dp"
+        android:layout_height="50dp"
+        android:layout_alignBottom="@+id/arFragment"
+        android:layout_centerHorizontal="true"
+        android:scaleType="centerInside"
+        android:layout_alignParentBottom="true"
+        android:layout_marginBottom="65pt"
+        android:background="#00ffffff"
+        android:src="@drawable/staff_notation" />
 
     <Button
         android:id="@+id/test"
