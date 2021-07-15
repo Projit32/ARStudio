@@ -4,6 +4,7 @@
     xmlns:custom="http://schemas.android.com/apk/res-auto"
     android:layout_width="250dp"
     android:layout_height="210dp"
+    android:background="@drawable/aud_anim"
     android:id="@+id/audioPlayerLayout">
 
     <LinearLayout
@@ -21,7 +22,7 @@
             android:id="@+id/CircleViz"
             android:layout_width="145dp"
             android:layout_height="145dp"
-            custom:avColor="@color/av_dark_blue"
+            custom:avColor="@color/av_deep_orange"
             custom:avDensity="0.8"
             custom:avSpeed="normal"
             android:visibility="gone"
@@ -41,7 +42,7 @@
             android:id="@+id/BlobViz"
             android:layout_width="145dp"
             android:layout_height="145dp"
-            custom:avColor="@color/av_dark_blue"
+            custom:avColor="@color/av_red"
             custom:avDensity="0.8"
             custom:avSpeed="normal"
             android:visibility="gone"
@@ -51,7 +52,7 @@
             android:id="@+id/BarViz"
             android:layout_width="145dp"
             android:layout_height="145dp"
-            custom:avColor="@color/av_dark_blue"
+            custom:avColor="@color/av_green"
             custom:avDensity="0.8"
             custom:avSpeed="normal"
             android:visibility="gone"
@@ -61,7 +62,7 @@
             android:id="@+id/BlastViz"
             android:layout_width="145dp"
             android:layout_height="145dp"
-            custom:avColor="@color/av_dark_blue"
+            custom:avColor="@color/av_light_blue"
             custom:avDensity="0.8"
             custom:avSpeed="normal"
             android:visibility="gone"

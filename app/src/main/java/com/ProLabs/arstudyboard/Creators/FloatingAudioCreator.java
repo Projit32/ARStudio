@@ -1,30 +1,28 @@
 package com.ProLabs.arstudyboard.Creators;
 
 import android.annotation.SuppressLint;
+import android.graphics.drawable.AnimationDrawable;
 import android.net.Uri;
 import android.view.View;
 import android.widget.ImageButton;
 import android.widget.ImageView;
+import android.widget.RelativeLayout;
 import android.widget.Toast;
 
 import com.ProLabs.arstudyboard.MainActivity;
 import com.ProLabs.arstudyboard.Manager.AudioPlayerManager;
 import com.ProLabs.arstudyboard.R;
 import com.ProLabs.arstudyboard.RenderableItems.AudioItem;
-import com.gauravk.audiovisualizer.visualizer.CircleLineVisualizer;
 import com.google.ar.core.Anchor;
 import com.google.ar.sceneform.AnchorNode;
 import com.google.ar.sceneform.rendering.ViewRenderable;
 import com.google.ar.sceneform.ux.TransformableNode;
 
-import java.io.IOException;
 import java.util.ArrayList;
 import java.util.HashMap;
 import java.util.Map;
 import java.util.Random;
-import java.util.function.Consumer;
 
-import javax.annotation.Nullable;
 
 public class FloatingAudioCreator {
 
@@ -219,9 +217,11 @@ public class FloatingAudioCreator {
         }
 
     }
-    public int getRandomImage() {
+    private int getRandomImage() {
         return  musicImages[new Random().nextInt(musicImages.length)];
     }
+
+
 
 
 }

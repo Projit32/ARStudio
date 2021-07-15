@@ -1,10 +1,12 @@
 package com.ProLabs.arstudyboard.Manager;
 
 import android.content.Context;
+import android.graphics.drawable.AnimationDrawable;
 import android.media.AudioAttributes;
 import android.media.MediaPlayer;
 import android.net.Uri;
 import android.view.View;
+import android.widget.RelativeLayout;
 
 import com.ProLabs.arstudyboard.Manager.AudioActionListeners.OnPauseListener;
 import com.ProLabs.arstudyboard.Manager.AudioActionListeners.OnPlayListener;
@@ -26,6 +28,7 @@ public class AudioPlayerManager {
     private OnPlayListener onPlayListener;
     private OnStopListener onStopListener;
     private MediaPlayer.OnBufferingUpdateListener onBufferingUpdateListener;
+    AnimationDrawable animationDrawable;
 
     public void setOnBufferingUpdateListener(MediaPlayer.OnBufferingUpdateListener onBufferingUpdateListener) {
         this.onBufferingUpdateListener = onBufferingUpdateListener;
@@ -45,10 +48,20 @@ public class AudioPlayerManager {
             stop();
         });
 
-
+        startBackgroundAnimation(view);
         audioVizManager = new AudioVizManager(view);
         audioVizManager.init(mediaPlayer.getAudioSessionId());
     }
+
+    private void startBackgroundAnimation(View view)
+    {
+        RelativeLayout your_Layout = view.findViewById(R.id.audioPlayerLayout);
+        animationDrawable =  (AnimationDrawable)your_Layout.getBackground();
+        animationDrawable.setEnterFadeDuration(4000);
+        animationDrawable.setExitFadeDuration(4000);
+
+    }
+
     public void Build(Context context, Uri audioUri, View audioViz) throws IOException {
         this.context = context;
         this.uri = audioUri;
@@ -91,6 +104,7 @@ public class AudioPlayerManager {
         {
             audioVizManager.release();
             audioVizManager=null;
+            animationDrawable=null;
         }
 
     }
@@ -129,6 +143,7 @@ public class AudioPlayerManager {
         if(this.mediaPlayer!=null) {
             this.mediaPlayer.start();
         }
+        animationDrawable.start();
         audioVizManager.show();
         onPlayListener.actionOnPlay(this.mediaPlayer);
     }
@@ -157,6 +172,7 @@ public class AudioPlayerManager {
                 return;
             if (!paused) {
                 mediaPlayer.pause();
+                animationDrawable.stop();
                 onPauseListener.actionOnPause(this.mediaPlayer);
             } else {
                 play();
@@ -175,6 +191,7 @@ public class AudioPlayerManager {
             if (!stop) {
                 stop();
                 stop = true;
+                animationDrawable.stop();
             } else {
                 stop = false;
                 prepare();

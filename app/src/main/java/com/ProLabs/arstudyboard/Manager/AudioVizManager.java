@@ -26,6 +26,7 @@ public class AudioVizManager {
     private BaseVisualizer visualizer;
     private View view;
     private Map<Integer, VizCreation> visualizerMap;
+    private int randomViewId;
 
     private void prepareMap(){
         visualizerMap = new HashMap<>();
@@ -41,7 +42,7 @@ public class AudioVizManager {
 
     private void setRandomViz(){
         prepareMap();
-        int randomViewId=(int)visualizerMap.keySet().toArray()[new Random().nextInt(visualizerMap.size())];
+        randomViewId=(int)visualizerMap.keySet().toArray()[new Random().nextInt(visualizerMap.size())];
         visualizer=visualizerMap.get(randomViewId).createViz(randomViewId);
     }
 
@@ -93,8 +94,10 @@ public class AudioVizManager {
 
     public void release()
     {
-        if(visualizer!=null)
+        if(visualizer!=null) {
+            view.findViewById(randomViewId).setVisibility(View.GONE);
             visualizer.release();
+        }
         else
             Log.v(TAG, "Audio view is null");
     }

@@ -1,6 +1,7 @@
 package com.ProLabs.arstudyboard;
 
 import android.os.Bundle;
+import android.util.Log;
 import android.view.View;
 
 import androidx.annotation.NonNull;
@@ -18,8 +19,10 @@ import java.util.EnumSet;
 import java.util.List;
 
 public class CloudARFragment extends ArFragment {
+
     @Override
     protected Config getSessionConfiguration(Session session) {
+
         CameraConfigFilter filter = new CameraConfigFilter(session);
         filter.setTargetFps(EnumSet.of(CameraConfig.TargetFps.TARGET_FPS_60));
         List<CameraConfig> cameraConfigList = session.getSupportedCameraConfigs(filter);
@@ -34,16 +37,11 @@ public class CloudARFragment extends ArFragment {
         session.setCameraConfig(cameraConfigList.get(0));
         Config config = session.getConfig();
 
-        if (session.isDepthModeSupported(Config.DepthMode.AUTOMATIC)) {
-            config.setDepthMode(Config.DepthMode.AUTOMATIC);
-        }
-        config.setUpdateMode(Config.UpdateMode.LATEST_CAMERA_IMAGE);
-
         config.setCloudAnchorMode(Config.CloudAnchorMode.ENABLED);
-        config.setFocusMode(Config.FocusMode.AUTO);
         session.configure(config);
         this.getArSceneView().setupSession(session);
         return config;
+
     }
 
 

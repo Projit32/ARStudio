@@ -204,7 +204,9 @@ public class FirebaseManager {
         String filename=Long.toHexString(System.currentTimeMillis()+(long)Math.random()*10000000)+".png";
         StorageReference childref=storageReference.child(roomNumber+"/"+filename);
         UploadTask uploadTask=childref.putBytes(imagebytes);
-        uploadTask.continueWithTask(task -> {
+        uploadTask.addOnProgressListener(snapshot -> {
+            Toast.makeText(mainActivity, (snapshot.getBytesTransferred()/snapshot.getTotalByteCount()*100)+"% Uploaded", Toast.LENGTH_SHORT).show();
+        }).continueWithTask(task -> {
             if (!task.isSuccessful()) {
                 throw task.getException();
             }
@@ -223,7 +225,7 @@ public class FirebaseManager {
         });
     }
     public void uploadAudio(Uri uri, AudioItem audioItem) {
-        String filename=Long.toHexString(System.currentTimeMillis()+(long)Math.random()*10000000)+"."+getMimeType(uri);
+        String filename=Long.toHexString(System.currentTimeMillis()+ (long) (Math.random() * 10000000))+"."+getMimeType(uri);
         StorageReference childref=storageReference.child(roomNumber+"/"+filename);
 
         UploadTask uploadTask=childref.putFile(uri);

@@ -62,7 +62,11 @@ import com.andrognito.flashbar.Flashbar;
 import com.google.android.filament.ColorGrading;
 import com.google.android.material.floatingactionbutton.FloatingActionButton;
 import com.google.ar.core.Anchor;
+import com.google.ar.core.CameraConfig;
+import com.google.ar.core.CameraConfigFilter;
+import com.google.ar.core.Config;
 import com.google.ar.core.Pose;
+import com.google.ar.core.Session;
 import com.google.ar.core.TrackingState;
 import com.google.ar.sceneform.AnchorNode;
 import com.google.ar.sceneform.ArSceneView;
@@ -87,8 +91,10 @@ import com.google.ar.sceneform.ux.TransformableNode;
 
 import java.io.IOException;
 import java.util.ArrayList;
+import java.util.EnumSet;
 import java.util.HashMap;
 import java.util.LinkedList;
+import java.util.List;
 import java.util.ListIterator;
 import java.util.Queue;
 import java.util.concurrent.CompletableFuture;
@@ -193,16 +199,16 @@ public class MainActivity extends AppCompatActivity implements Scene.OnUpdateLis
         handler.postDelayed(()->{showFlashBar("Press the + button to add objects to the screen");},550);
         URLManager.resetDevChannelUrl();
 
-        checkAllPermissions();
+
         //AR Fragment
         try {
-
             arFragment = (CloudARFragment) getSupportFragmentManager().findFragmentById(R.id.arFragment);
             arFragment.getArSceneView().getPlaneRenderer().setEnabled(true);
-
+            arFragment.setOnViewCreatedListener(onViewCreatedListener);
+            arFragment.setOnSessionConfigurationListener(onSessionConfigurationListener);
             arFragment.setOnTapArPlaneListener(addObjects);
             arFragment.getArSceneView().getScene().addOnUpdateListener(this);
-            arFragment.setOnViewCreatedListener(onViewCreatedListener);
+
 
             //Drawing Part
             MaterialFactory.makeOpaqueWithColor(this, WHITE)
@@ -286,6 +292,7 @@ public class MainActivity extends AppCompatActivity implements Scene.OnUpdateLis
                     showErrorFlashbar("Internet connection isn't available.");
                     return;
                 }
+                checkAllPermissions();
                 if (!firebaseManager.isRoomInitialized()) {
                     showLiveFlashbar("Long Press on the button to enter room number", false);
                     return;
@@ -554,7 +561,7 @@ public class MainActivity extends AppCompatActivity implements Scene.OnUpdateLis
                         }
                     });
                 } else {
-                    showErrorFlashbar("Storage permission isn't granted");
+                    showErrorFlashbar("Storage/Mic permission isn't granted");
                 }
             });
 
@@ -685,6 +692,8 @@ public class MainActivity extends AppCompatActivity implements Scene.OnUpdateLis
         tutorials.add(new Pair<View, String>(Record,"Record anything and everything. If it's red, its recording, else it's not." +
                 "\n\nTap and hold to change resolution of recording. High resolution might cause frame drops."));
 
+        tutorials.add(new Pair<>(FloatingAudio, "You can augmented audio players. Select a song from you gallery, and place it on any scanned area."));
+
         tutorials.add(new Pair<View, String>(liveBtn,"Creating a Live session allows you to show/involve your friends to do all" +
                 " the above mentioned stuff (Except drawing). Make sure that you have scanned the area thoroughly from all sides " +
                 "for 30 seconds or more and from all the angles.\n\nCreate/Join a Virtual Room by long pressing the live button " +
@@ -741,8 +750,16 @@ public class MainActivity extends AppCompatActivity implements Scene.OnUpdateLis
         arSceneView.getCameraStream()
                 .setDepthOcclusionMode(CameraStream.DepthOcclusionMode
                         .DEPTH_OCCLUSION_ENABLED);
-
     };
+
+    BaseArFragment.OnSessionConfigurationListener onSessionConfigurationListener = ((session, config) -> {
+        if (session.isDepthModeSupported(Config.DepthMode.AUTOMATIC)) {
+            config.setDepthMode(Config.DepthMode.AUTOMATIC);
+        }
+        config.setUpdateMode(Config.UpdateMode.LATEST_CAMERA_IMAGE);
+    });
+
+
 
     //Ar Scene Tap Listener
      public BaseArFragment.OnTapArPlaneListener addObjects= (hitResult,plane,motionEvent)->{
@@ -1391,7 +1408,6 @@ public class MainActivity extends AppCompatActivity implements Scene.OnUpdateLis
 
          return ActivityCompat.checkSelfPermission(this, Manifest.permission.RECORD_AUDIO)== PackageManager.PERMISSION_GRANTED;
      }
-
 
 
      //Cloud Anchor Methods
