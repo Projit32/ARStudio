@@ -6,13 +6,12 @@
 ## Get this app from 
 [<img  src="https://play.google.com/intl/en_us/badges/static/images/badges/en_badge_web_generic.png" height=75>](https://play.google.com/store/apps/details?id=com.ProLabs.arstudyboard) 
 
-An implementation of ARCore [Sceneform](https://developers.google.com/sceneform/develop) for **supported** Android Phones. Sceneform has been officially open sourced by Google and this app has been built upon the latest Sceneform SDK `v1.16.0`, which was mofified to work on the latest **AndroidX** libraries and **Gradel 4.0.0**. You can find the forked repository [Here](https://github.com/Projit32/sceneform-android-sdk). 
-
+An implementation of ARCore [Sceneform](https://developers.google.com/sceneform/develop) for **supported** Android Phones. Sceneform has been officially open sourced by Google and this app has been built upon one of the forked and maintained Sceneform SDK repositories by [Thomas Gorisse](https://github.com/ThomasGorisse). I'd definiately suggest to check his [Sceneform SDK Repository](https://github.com/thomasgorisse/sceneform-android-sdk) out.
 <p align="center">
   <img  src="GIFs/features.gif" height=450>
 </p>
 
-AR Studio: Make your world your playground, draw in the air, create live photo galleries, Place notes anywhere, visualize 2D, 3D and animated models in real-time, forget projectors and theoretical explanations, analyze trends, bars and chart data, and get immersed into the world of Augmented Reality with the all-purpose Augmented Reality app with live cloud synchronization support! This was made with simplicity in mind and has the simplest and intuitive interface to use, along with so many cool features to play with.
+AR Studio: Make your world your playground, draw in the air, create live photo galleries, Place notes anywhere, visualize 2D, 3D and animated models in real-time, forget projectors and theoretical explanations, analyze trends, bars and chart data, set the stage with some music using the AR media player, and get immersed into the world of Augmented Reality with the all-purpose Augmented Reality app with live cloud synchronization support! This was made with simplicity in mind and has the simplest and intuitive interface to use, along with so many cool features to play with.
 
 <p align="center">
   <img  src="GIFs/interface.gif" height=450>
@@ -85,10 +84,15 @@ Initial Setup:
   <img  src="GIFs/graphs.gif">
 </p>
 
-6. Create rooms to host your models, images and graphs to show them to others, live.
+6. Play music on an AR media player
+
+<p>
+  placeholder
+</p>
+
+7. Create rooms to host your models, images and graphs to show them to others, live.
 
 <p>
   <img  src="GIFs/live.gif" height=450>
 </p>
-
 Also, checkout the official video on [YouTube](https://youtu.be/2YLVbWCcByY).
