@@ -19,8 +19,8 @@ AR Studio: Make your world your playground, draw in the air, create live photo g
 
 See the full demo of the app and the tutorial from this [link](https://youtu.be/TLXhzyL4WCE). Also, checkout the official video on [YouTube](https://youtu.be/doG1R1zLB3g).
 
-> **Note :** Most of the 3D models shown here have been taken from [Google Poly](https://poly.google.com/) and
-> all the 2D models are created from scrath in Android Studio and are rendered in real time only.
+> **Note :** Most of the 3D models shown here have been taken from [Google Poly](https://poly.google.com/) and [SketchFab](https://sketchfab.com/).
+>  All the 2D models are created from scrath in Android Studio and are rendered in real time only.
 
 Pre-requisits:
 1. ARCore supported **Android** phone
