@@ -84,15 +84,13 @@ Initial Setup:
   <img  src="GIFs/graphs.gif">
 </p>
 
-6. Play music on an AR media player
+6. Play music on an AR media player. 
 
-<p>
-  placeholder
-</p>
+[<img  src="https://img.youtube.com/vi/0fzt9bISbmM/1.jpg" height=400>](https://youtu.be/0fzt9bISbmM)
 
 7. Create rooms to host your models, images and graphs to show them to others, live.
 
 <p>
   <img  src="GIFs/live.gif" height=450>
 </p>
-Also, checkout the official video on [YouTube](https://youtu.be/2YLVbWCcByY).
+Also, checkout the official video over [Here](https://youtu.be/2YLVbWCcByY)
