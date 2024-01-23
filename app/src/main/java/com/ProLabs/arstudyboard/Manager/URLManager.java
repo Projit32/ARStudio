@@ -2,7 +2,7 @@ package com.ProLabs.arstudyboard.Manager;
 
 public class URLManager {
 
-    public static String StableChannelUrl="YOUR_DOMAIN_NAME";
+    public static String StableChannelUrl="http://YOUR_DOMAIN_NAME/";
     public static String DevChannelUrl="";
 
     public static String BaseUrl=StableChannelUrl;
@@ -24,7 +24,7 @@ public class URLManager {
         return BaseUrl+"/ARSR/AnimatedObjects/";
     }
 
-    public static void clearDevChannelURL() { DevChannelUrl=StableChannelUrl; }
+    public static void clearDevChannelURL() { DevChannelUrl=""; }
 
     public static void resetDevChannelUrl()
     {

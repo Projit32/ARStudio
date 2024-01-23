@@ -25,7 +25,9 @@
         android:layout_marginTop="50dp"
         android:src="@drawable/arcore_logo"/>
 
+
     <ImageView
+        android:id="@+id/firebase"
         android:layout_width="100pt"
         android:layout_height="50pt"
         android:layout_below="@+id/MainLogo"
@@ -33,5 +35,14 @@
         android:layout_marginTop="50dp"
         android:layout_marginEnd="15pt"
         android:src="@drawable/firebase_logo" />
+
+    <ImageView
+        android:layout_width="100pt"
+        android:layout_height="50pt"
+        android:layout_below="@+id/firebase"
+        android:layout_alignParentEnd="true"
+        android:layout_marginTop="30dp"
+        android:layout_marginEnd="50pt"
+        android:src="@drawable/aws" />
 
 </RelativeLayout>

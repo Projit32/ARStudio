@@ -13,6 +13,7 @@ import android.net.ConnectivityManager;
 import android.net.Network;
 import android.net.NetworkRequest;
 import android.net.Uri;
+import android.os.Build;
 import android.os.Bundle;
 import android.os.Handler;
 import android.provider.MediaStore;
@@ -30,6 +31,8 @@ import android.widget.ProgressBar;
 import android.widget.Toast;
 
 import androidx.activity.result.ActivityResult;
+import androidx.activity.result.ActivityResultLauncher;
+import androidx.activity.result.contract.ActivityResultContracts;
 import androidx.annotation.NonNull;
 import androidx.annotation.Nullable;
 import androidx.appcompat.app.AlertDialog;
@@ -109,7 +112,6 @@ public class MainActivity extends AppCompatActivity implements Scene.OnUpdateLis
  {
 
     private static final String TAG = MainActivity.class.getSimpleName();
-    private static final int IMAGE_CODE=1,EXCEL_CODE=3,AUDIO_CODE=2;
     private static final float DRAW_DISTANCE = 0.13f;
     private static final Color WHITE = new Color(android.graphics.Color.WHITE);
     private static final Color RED = new Color(android.graphics.Color.RED);
@@ -1387,26 +1389,121 @@ public class MainActivity extends AppCompatActivity implements Scene.OnUpdateLis
          storagePermission=checkStoragePermission();
      }
 
+     private final ActivityResultLauncher<String[]> requestPermissionLauncher =
+             registerForActivityResult(new ActivityResultContracts.RequestMultiplePermissions(), permission ->{
+                 boolean allGranted = true;
+
+                 for (Boolean isGranted : permission.values()){
+                     if (!isGranted){
+                         allGranted = false;
+                         break;
+                     }
+                 }
+
+                 if (allGranted){
+                     showFlashBar("Required Permissions are grated");
+                 } else {
+                     showFlashBar("Required Permissions are not grated");
+                 }
+
+             });
+
+
 
      public boolean checkStoragePermission()
      {
          //Write Permission
-         if(ActivityCompat.checkSelfPermission(this, Manifest.permission.WRITE_EXTERNAL_STORAGE)!= PackageManager.PERMISSION_GRANTED)
-         {
-             ActivityCompat.requestPermissions(this, new  String[]{Manifest.permission.WRITE_EXTERNAL_STORAGE},1);
-         }
+         if (Build.VERSION.SDK_INT >= Build.VERSION_CODES.TIRAMISU){
 
-         return ActivityCompat.checkSelfPermission(this, Manifest.permission.WRITE_EXTERNAL_STORAGE)== PackageManager.PERMISSION_GRANTED;
+             String[] permissions = new String[]{
+                     android.Manifest.permission.READ_MEDIA_IMAGES,
+                     android.Manifest.permission.READ_MEDIA_AUDIO,
+                     android.Manifest.permission.READ_MEDIA_VIDEO,
+                     android.Manifest.permission.CAMERA,
+             };
+
+
+             List<String> permissionsTORequest = new ArrayList<>();
+             for (String permission : permissions){
+                 if (ContextCompat.checkSelfPermission(this,permission) != PackageManager.PERMISSION_GRANTED){
+                     permissionsTORequest.add(permission);
+                 }
+             }
+
+             if (permissionsTORequest.isEmpty())
+                 return true;
+             else{
+                 requestPermissionLauncher.launch(permissionsTORequest.toArray(new String[0]));
+                 return false;
+             }
+
+
+         } else if (Build.VERSION.SDK_INT >= Build.VERSION_CODES.M) {
+             String[] permissions = new String[]{
+                     Manifest.permission.WRITE_EXTERNAL_STORAGE,
+             };
+
+
+             List<String> permissionsTORequest = new ArrayList<>();
+             for (String permission : permissions){
+                 if (ContextCompat.checkSelfPermission(this,permission) != PackageManager.PERMISSION_GRANTED){
+                     permissionsTORequest.add(permission);
+                 }
+             }
+
+             if (permissionsTORequest.isEmpty())
+                 return true;
+             else{
+                 requestPermissionLauncher.launch(permissionsTORequest.toArray(new String[0]));
+                 return false;
+             }
+
+         }
+         else {
+             if (ActivityCompat.checkSelfPermission(this, Manifest.permission.WRITE_EXTERNAL_STORAGE) != PackageManager.PERMISSION_GRANTED) {
+                 ActivityCompat.requestPermissions(this, new String[]{Manifest.permission.WRITE_EXTERNAL_STORAGE}, 1);
+             }
+
+
+             return ActivityCompat.checkSelfPermission(this, Manifest.permission.WRITE_EXTERNAL_STORAGE) == PackageManager.PERMISSION_GRANTED;
+         }
      }
 
      public  boolean checkMicPermission()
      {
-         if(ActivityCompat.checkSelfPermission(this, Manifest.permission.RECORD_AUDIO)!= PackageManager.PERMISSION_GRANTED)
-         {
-             ActivityCompat.requestPermissions(this, new  String[]{Manifest.permission.RECORD_AUDIO},2);
+//         if(ActivityCompat.checkSelfPermission(this, Manifest.permission.RECORD_AUDIO)!= PackageManager.PERMISSION_GRANTED)
+//         {
+//             ActivityCompat.requestPermissions(this, new  String[]{Manifest.permission.RECORD_AUDIO},2);
+//         }
+//
+//         return ActivityCompat.checkSelfPermission(this, Manifest.permission.RECORD_AUDIO)== PackageManager.PERMISSION_GRANTED;
+
+
+         if (ContextCompat.checkSelfPermission(
+                 this, Manifest.permission.RECORD_AUDIO) ==
+                 PackageManager.PERMISSION_GRANTED) {
+             // You can use the API that requires the permission.
+             ContextCompat.checkSelfPermission(
+                     this, Manifest.permission.RECORD_AUDIO);
+         } else if (ActivityCompat.shouldShowRequestPermissionRationale(
+                 this, Manifest.permission.RECORD_AUDIO)) {
+             // In an educational UI, explain to the user why your app requires this
+             // permission for a specific feature to behave as expected, and what
+             // features are disabled if it's declined. In this UI, include a
+             // "cancel" or "no thanks" button that lets the user continue
+             // using your app without granting the permission.
+             showFlashBar("Microphone Permissions are required for recording video.");
+
+         } else {
+             // You can directly ask for the permission.
+             requestPermissions(
+                     new String[] { Manifest.permission.RECORD_AUDIO },
+                     2);
          }
 
-         return ActivityCompat.checkSelfPermission(this, Manifest.permission.RECORD_AUDIO)== PackageManager.PERMISSION_GRANTED;
+         return (ContextCompat.checkSelfPermission(
+                 this, Manifest.permission.RECORD_AUDIO) ==
+                 PackageManager.PERMISSION_GRANTED);
      }
 
 
